@@ -1,0 +1,1886 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Workspace Ready — Google Workspace Skills Course</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#122031;
+  --ink-soft:#3d4f63;
+  --paper:#f5f6f4;
+  --panel:#ffffff;
+  --line:#dde2e2;
+  --teal:#0e7c6b;
+  --teal-deep:#0a5c4f;
+  --teal-tint:#e2f2ee;
+  --amber:#c97a1a;
+  --amber-tint:#fbeed9;
+  --coral:#b3492f;
+  --coral-tint:#f8e5df;
+  --slate-tint:#eef0ef;
+  --radius-sm:4px;
+  --radius-md:8px;
+  --shadow-card:0 1px 0 rgba(18,32,49,0.06), 0 8px 20px -14px rgba(18,32,49,0.35);
+  --focus:0 0 0 3px rgba(14,124,107,0.35);
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{
+  background:var(--paper);
+  color:var(--ink);
+  font-family:'IBM Plex Sans',system-ui,sans-serif;
+  font-size:16px;
+  line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3,h4,.display{
+  font-family:'Space Grotesk',system-ui,sans-serif;
+  font-weight:600;
+  line-height:1.15;
+  margin:0;
+  color:var(--ink);
+}
+p{margin:0 0 0.75em 0;}
+a{color:var(--teal-deep);}
+button{font-family:inherit;}
+:focus-visible{outline:none;box-shadow:var(--focus);border-radius:var(--radius-sm);}
+img{max-width:100%;}
+
+.skip-link{position:absolute;left:-9999px;top:0;background:var(--ink);color:#fff;padding:10px 16px;z-index:100;border-radius:var(--radius-sm);}
+.skip-link:focus{left:12px;top:12px;}
+
+/* ---- App shell ---- */
+#app{min-height:100vh;display:flex;flex-direction:column;}
+
+.topbar{
+  background:var(--ink);
+  color:#fff;
+  padding:10px 20px;
+  display:flex;
+  align-items:center;
+  gap:16px;
+  flex-wrap:wrap;
+  position:sticky;
+  top:0;
+  z-index:20;
+  box-shadow:0 2px 8px rgba(0,0,0,0.15);
+}
+.brand{
+  display:flex;align-items:center;gap:10px;
+  font-family:'Space Grotesk',sans-serif;
+  font-weight:700;
+  font-size:1.05rem;
+  color:#fff;text-decoration:none;
+  margin-right:auto;
+}
+.brand-mark{
+  width:30px;height:30px;border-radius:7px;
+  background:linear-gradient(135deg,var(--teal) 0%, var(--teal-deep) 100%);
+  display:flex;align-items:center;justify-content:center;
+  font-size:16px;
+}
+.topnav{display:flex;gap:4px;flex-wrap:wrap;}
+.topnav button{
+  background:transparent;border:1px solid transparent;color:#cfe0dc;
+  padding:7px 12px;border-radius:var(--radius-sm);cursor:pointer;font-size:0.92rem;
+}
+.topnav button:hover{background:rgba(255,255,255,0.08);color:#fff;}
+.topnav button.active{background:rgba(255,255,255,0.14);color:#fff;border-color:rgba(255,255,255,0.2);}
+.role-pill{
+  display:flex;background:rgba(255,255,255,0.08);border-radius:999px;padding:3px;gap:2px;
+}
+.role-pill button{
+  border-radius:999px;padding:6px 14px;font-size:0.85rem;background:transparent;color:#cfe0dc;border:none;cursor:pointer;
+}
+.role-pill button.active{background:#fff;color:var(--ink);font-weight:600;}
+
+main{flex:1;width:100%;max-width:1040px;margin:0 auto;padding:28px 20px 64px;}
+.container-wide{max-width:1220px;}
+
+/* ---- Buttons ---- */
+.btn{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:11px 20px;border-radius:var(--radius-sm);
+  font-size:0.95rem;font-weight:600;cursor:pointer;border:1.5px solid transparent;
+  font-family:'IBM Plex Sans',sans-serif;
+}
+.btn-primary{background:var(--teal);color:#fff;}
+.btn-primary:hover{background:var(--teal-deep);}
+.btn-secondary{background:#fff;color:var(--ink);border-color:var(--line);}
+.btn-secondary:hover{border-color:var(--ink-soft);}
+.btn-ghost{background:transparent;color:var(--teal-deep);border-color:transparent;padding-left:0;padding-right:0;}
+.btn-ghost:hover{text-decoration:underline;}
+.btn-danger{background:#fff;color:var(--coral);border-color:var(--coral);}
+.btn:disabled{opacity:0.45;cursor:not-allowed;}
+.btn-block{width:100%;justify-content:center;}
+.btn-sm{padding:7px 13px;font-size:0.85rem;}
+
+/* ---- Cards & layout helpers ---- */
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius-md);padding:22px;box-shadow:var(--shadow-card);}
+.eyebrow{color:var(--teal-deep);font-weight:600;font-size:0.85rem;}
+.stack{display:flex;flex-direction:column;gap:16px;}
+.row{display:flex;gap:16px;flex-wrap:wrap;}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.grid-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px;}
+@media (max-width:640px){.grid-2{grid-template-columns:1fr;}}
+
+/* ---- Progress bar ---- */
+.progress-track{
+  height:10px;background:var(--slate-tint);border-radius:2px;overflow:hidden;display:flex;border:1px solid var(--line);
+}
+.progress-fill{height:100%;background:var(--teal);}
+.progress-row{display:flex;align-items:center;gap:12px;}
+.progress-row .progress-track{flex:1;}
+.progress-pct{font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:0.9rem;min-width:38px;text-align:right;}
+
+/* segmented mastery bar: distinct blocks per skill instead of a smooth gradient bar */
+.seg-bar{display:flex;gap:2px;height:14px;}
+.seg{flex:1;border-radius:1px;background:var(--slate-tint);border:1px solid var(--line);}
+.seg.achieved{background:var(--teal);border-color:var(--teal-deep);}
+.seg.pending{background:var(--amber);border-color:#a2650f;}
+.seg.needs-practice{background:var(--coral);border-color:#8f3620;}
+
+/* ---- Status chip ---- */
+.chip{display:inline-flex;align-items:center;gap:6px;padding:3px 10px;border-radius:999px;font-size:0.78rem;font-weight:600;border:1px solid transparent;}
+.chip-not-started{background:var(--slate-tint);color:var(--ink-soft);border-color:var(--line);}
+.chip-learning{background:#eaf1fb;color:#2a5a94;border-color:#c6d9f0;}
+.chip-pending{background:var(--amber-tint);color:#8a5510;border-color:#eccb92;}
+.chip-achieved{background:var(--teal-tint);color:var(--teal-deep);border-color:#b9e0d6;}
+.chip-needs-practice{background:var(--coral-tint);color:var(--coral);border-color:#e9bcac;}
+
+/* ---- Skill card ---- */
+.skill-card{
+  background:var(--panel);border:1px solid var(--line);border-radius:var(--radius-md);
+  padding:16px;cursor:pointer;text-align:left;display:flex;flex-direction:column;gap:10px;width:100%;
+}
+.skill-card:hover{border-color:var(--teal);}
+.skill-card .sk-title{font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:1rem;}
+.skill-icon{width:34px;height:34px;border-radius:7px;background:var(--teal-tint);color:var(--teal-deep);display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;}
+
+/* ---- Course map ---- */
+.course-map{display:flex;flex-direction:column;gap:0;max-width:640px;margin:0 auto;}
+.map-node{
+  display:flex;gap:16px;align-items:flex-start;position:relative;padding-bottom:34px;
+}
+.map-node:last-child{padding-bottom:0;}
+.map-node::before{
+  content:'';position:absolute;left:23px;top:48px;bottom:0;width:2px;background:var(--line);
+}
+.map-node:last-child::before{display:none;}
+.map-dot{
+  width:48px;height:48px;border-radius:50%;background:#fff;border:2px solid var(--line);
+  display:flex;align-items:center;justify-content:center;font-family:'Space Grotesk',sans-serif;font-weight:700;
+  flex-shrink:0;z-index:1;font-size:1.05rem;color:var(--ink-soft);
+}
+.map-node.complete .map-dot{background:var(--teal);border-color:var(--teal-deep);color:#fff;}
+.map-node.current .map-dot{border-color:var(--teal);color:var(--teal-deep);box-shadow:0 0 0 4px var(--teal-tint);}
+.map-node.locked .map-dot{color:#aab3bb;}
+.map-body{flex:1;padding-top:6px;}
+.map-body h3{font-size:1.05rem;}
+.map-body .map-desc{color:var(--ink-soft);font-size:0.9rem;margin-top:2px;}
+
+/* ---- Badges ---- */
+.badge{
+  display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:var(--radius-md);
+  background:var(--amber-tint);border:1px solid #eccb92;min-width:180px;
+}
+.badge.locked{background:var(--slate-tint);border-color:var(--line);opacity:0.75;}
+.badge-icon{font-size:1.3rem;}
+.badge-name{font-weight:600;font-size:0.9rem;}
+.badge-sub{font-size:0.75rem;color:var(--ink-soft);}
+
+/* ---- Step list ---- */
+.step-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px;}
+.step-list li{display:flex;gap:12px;align-items:flex-start;}
+.step-num{
+  width:26px;height:26px;border-radius:50%;background:var(--teal-tint);color:var(--teal-deep);
+  display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.85rem;flex-shrink:0;
+  font-family:'Space Grotesk',sans-serif;
+}
+
+/* ---- Table (teacher) ---- */
+table.class-table{width:100%;border-collapse:collapse;font-size:0.88rem;}
+table.class-table th, table.class-table td{padding:10px 12px;text-align:left;border-bottom:1px solid var(--line);}
+table.class-table th{font-family:'Space Grotesk',sans-serif;font-weight:600;color:var(--ink-soft);font-size:0.78rem;text-transform:uppercase;letter-spacing:0.03em;}
+table.class-table tr:hover td{background:var(--slate-tint);cursor:pointer;}
+
+/* ---- Forms ---- */
+label{display:block;font-weight:600;font-size:0.88rem;margin-bottom:6px;}
+input[type=text],input[type=url],textarea,select{
+  width:100%;padding:10px 12px;border:1.5px solid var(--line);border-radius:var(--radius-sm);
+  font-family:inherit;font-size:0.95rem;background:#fff;color:var(--ink);
+}
+input:focus,textarea:focus,select:focus{border-color:var(--teal);}
+
+.banner{padding:14px 16px;border-radius:var(--radius-md);border:1px solid;display:flex;gap:10px;align-items:flex-start;}
+.banner-info{background:var(--teal-tint);border-color:#b9e0d6;color:var(--teal-deep);}
+.banner-lock{background:var(--slate-tint);border-color:var(--line);color:var(--ink-soft);}
+.banner-success{background:var(--teal-tint);border-color:#b9e0d6;color:var(--teal-deep);}
+
+.crumb{color:var(--ink-soft);font-size:0.88rem;margin-bottom:14px;}
+.crumb button{background:none;border:none;color:var(--teal-deep);cursor:pointer;font-size:0.88rem;padding:0;font-family:inherit;}
+.crumb button:hover{text-decoration:underline;}
+
+.divider{height:1px;background:var(--line);margin:22px 0;}
+
+.empty-state{text-align:center;padding:50px 20px;color:var(--ink-soft);}
+
+.certificate{
+  background:#fff;border:2px solid var(--ink);border-radius:var(--radius-md);padding:50px 40px;text-align:center;
+  background-image:repeating-linear-gradient(135deg, rgba(14,124,107,0.03) 0px, rgba(14,124,107,0.03) 2px, transparent 2px, transparent 14px);
+}
+.certificate h1{font-size:2rem;margin-bottom:6px;}
+.certificate .cert-name{font-size:1.7rem;color:var(--teal-deep);margin:20px 0 6px;font-family:'Space Grotesk',sans-serif;font-weight:700;}
+
+@media print{
+  .topbar,.crumb,.no-print{display:none !important;}
+  body{background:#fff;}
+}
+</style>
+</head>
+<body>
+<a href="#main" class="skip-link">Skip to content</a>
+<div id="app"></div>
+<script>
+/* =========================================================================
+   WORKSPACE READY — course content data
+   Kept separate from rendering logic below so skills/levels can be edited
+   without touching the app code.
+   ========================================================================= */
+const COURSE = {
+  levels: [
+    {
+      id: 1,
+      title: "I Can Manage My Work",
+      short: "Managing My Work",
+      icon: "📁",
+      badge: "Drive Organizer",
+      badgeIcon: "🏆",
+      intro: "Before you can create anything, you need a place to keep it. This level is about setting up and organizing your Google account so your work never gets lost.",
+      sections: [
+        { name: "Google Drive Basics", skills: [
+          { id:"l1-login", title:"Log in to your school Google account", learn:"Your school account is different from a personal Gmail. Everything you make for school should be saved there, where your teacher can see it.",
+            watch:["Open a browser and go to accounts.google.com","Type your full school email address","Type your school password","Click Next, then check that your name is in the top right corner"],
+            tryIt:"Log in to your school Google account on this device.",
+            demonstrateTask:"Show your teacher you're logged in, or type your school email into the box below." },
+          { id:"l1-workspace", title:"Understand Google Workspace", learn:"Google Workspace is a set of tools — Docs, Slides, Sheets, Drive and more — that all save automatically and connect to your one account.",
+            watch:["Click the grid icon (9 dots) in the top right of any Google page","Look at the apps listed: Drive, Docs, Slides, Sheets, Gmail","Notice they all use the same account and the same sidebar"],
+            tryIt:"Open the app grid and name three Workspace apps you see.",
+            demonstrateTask:"List three Google Workspace apps you found." },
+          { id:"l1-open-drive", title:"Open Google Drive", learn:"Google Drive is where every file you create or upload for school lives.",
+            watch:["Go to drive.google.com, or click the grid icon and choose Drive","Look at the left sidebar: My Drive, Shared with me, Recent"],
+            tryIt:"Open Google Drive and find the 'My Drive' section.",
+            demonstrateTask:"Confirm you can see your My Drive folder." },
+          { id:"l1-find-files", title:"Find files", learn:"You can search for a file by name instead of scrolling through everything you own.",
+            watch:["Click the search bar at the top of Drive","Type part of a file's name","Press Enter and look at the results"],
+            tryIt:"Search Drive for any file and open it.",
+            demonstrateTask:"Type the name of a file you searched for and found." },
+          { id:"l1-create-files", title:"Create files", learn:"You can start a brand-new Doc, Slides, or Sheets file right from Drive.",
+            watch:["In Drive, click the + New button","Choose Google Docs, Slides, or Sheets","Wait for the blank file to open"],
+            tryIt:"Create a new blank Google Doc from Drive.",
+            demonstrateTask:"Paste the link to the new file you created." },
+          { id:"l1-create-folders", title:"Create folders", learn:"A folder in Drive works like a binder — it keeps related files together.",
+            watch:["Click + New","Choose Folder","Type a folder name","Click Create"],
+            tryIt:"Create a folder called Science.",
+            demonstrateTask:"Paste a link to your new folder, or confirm below." },
+          { id:"l1-rename-files", title:"Rename files", learn:"Clear file names make your work easy to find later — 'Animal Report' beats 'Untitled document 4'.",
+            watch:["Right-click a file","Choose Rename","Type the new name","Press Enter"],
+            tryIt:"Rename a file to something clear and specific.",
+            demonstrateTask:"Type the new file name you used." },
+          { id:"l1-move-files", title:"Move files into folders", learn:"Dragging a file into a folder — or using the Move To option — keeps your Drive tidy.",
+            watch:["Right-click a file","Choose 'Move to'","Select the folder you want","Click Move here","(or just drag the file onto the folder)"],
+            tryIt:"Move a file into a folder you created.",
+            demonstrateTask:"Confirm which file and folder you used." },
+          { id:"l1-organize-drive", title:"Organize your Drive", learn:"Good organizers group files by subject or project, not just dump everything into My Drive.",
+            watch:["Look at all the loose files in My Drive","Create a folder for each subject","Move each file into the right folder"],
+            tryIt:"Sort at least three files into subject folders.",
+            demonstrateTask:"Describe the folders you made." },
+          { id:"l1-autosave", title:"Understand automatic saving", learn:"Google Workspace saves every change the moment you make it — there's no Save button to click.",
+            watch:["Open any Doc and type a sentence","Look near the file name for 'Saving...' then 'All changes saved in Drive'"],
+            tryIt:"Type something in a Doc and watch the save status change.",
+            demonstrateTask:"Explain in your own words what auto-save means." },
+          { id:"l1-share-file", title:"Share a file", learn:"Sharing lets someone else open a file without you emailing it back and forth.",
+            watch:["Open a file","Click the blue Share button, top right","Type the person's email","Click Send"],
+            tryIt:"Share a file with your teacher's email.",
+            demonstrateTask:"Confirm who you shared the file with." },
+          { id:"l1-permissions", title:"Understand Viewer, Commenter, Editor", learn:"Viewer can only look. Commenter can leave notes. Editor can change the actual file. Pick the right one before you share.",
+            watch:["Open Share on any file","Click the dropdown next to a person's name","Read the three options: Viewer, Commenter, Editor"],
+            tryIt:"Explain which permission you'd give a classmate checking your work versus one co-writing it.",
+            demonstrateTask:"Write one sentence for each permission level." },
+          { id:"l1-copy-link", title:"Copy and submit a Google file link", learn:"Instead of downloading and attaching a file, you can copy its link and paste it into an assignment.",
+            watch:["Open Share on a file","Click 'Copy link'","Paste the link somewhere, like a submission box"],
+            tryIt:"Copy the link to one of your files.",
+            demonstrateTask:"Paste the link you copied." },
+        ]},
+      ],
+      challenge: {
+        title:"Organize Your Drive for a New School Year",
+        description:"Set your Drive up the way a Grade 7/8 student actually needs it.",
+        tasks:[
+          "Create folders for each of your subjects",
+          "Rename any messy file titles so they're clear",
+          "Create one new document and move it into the right subject folder",
+          "Share that document with your teacher as a Viewer",
+          "Submit the link to your organized document below"
+        ]
+      }
+    },
+    {
+      id: 2,
+      title: "I Can Create",
+      short: "Creating",
+      icon: "✏️",
+      badge: "Creator Certified",
+      badgeIcon: "🏆",
+      intro: "This is the biggest level — you'll learn to build real documents, presentations and spreadsheets in Docs, Slides and Sheets.",
+      sections: [
+        { name:"Google Docs", badge:"Docs Creator", badgeIcon:"📝", skills:[
+          { id:"l2-docs-create", title:"Create a document", learn:"Docs is where you write anything from a paragraph to a full report.", watch:["Open Drive","Click + New","Choose Google Docs"], tryIt:"Create a new blank Doc.", demonstrateTask:"Paste the link to your new Doc." },
+          { id:"l2-docs-type", title:"Type and edit", learn:"You can click anywhere in your text to fix a mistake, add a word, or delete one.", watch:["Click inside your text where you want to change something","Type, or press Backspace/Delete to remove text"], tryIt:"Type two sentences, then go back and fix one word.", demonstrateTask:"Describe the edit you made." },
+          { id:"l2-docs-select-format", title:"Select and format text", learn:"Highlighting (selecting) text is the first step before you can change how it looks.", watch:["Click and drag across text to select it","Use the toolbar to change how it looks"], tryIt:"Select a sentence and change its font color.", demonstrateTask:"Confirm what formatting you applied." },
+          { id:"l2-docs-bold-italic", title:"Bold, italic and underline", learn:"These three tools make specific words stand out for a reason — not just for decoration.", watch:["Select text","Click B for bold, I for italic, or U for underline","Or use Ctrl+B / Ctrl+I / Ctrl+U"], tryIt:"Make one word bold and another italic.", demonstrateTask:"Say which words you formatted and why." },
+          { id:"l2-docs-font", title:"Change font and size", learn:"Font and size affect how easy your document is to read.", watch:["Select text","Click the font name dropdown and pick a new font","Click the size number and pick a new size"], tryIt:"Change your title's font and make it larger than the body text.", demonstrateTask:"Confirm the font/size you chose for your title." },
+          { id:"l2-docs-headings", title:"Use headings", learn:"Headings break a long document into clear sections a reader can scan.", watch:["Click the line you want as a heading","Open the 'Normal text' dropdown","Choose Heading 1, 2, or 3"], tryIt:"Add two headings to a document.", demonstrateTask:"List the headings you added." },
+          { id:"l2-docs-lists", title:"Use bullets and numbered lists", learn:"Lists organize related points so they're easier to read than one long paragraph.", watch:["Select the lines you want listed","Click the bullet or numbered list icon in the toolbar"], tryIt:"Turn three lines of text into a bulleted list.", demonstrateTask:"Confirm you created a list." },
+          { id:"l2-docs-copy-cut-paste", title:"Copy, cut and paste", learn:"Copy duplicates text, cut removes it, and paste puts it somewhere new.", watch:["Select text","Ctrl+C to copy or Ctrl+X to cut","Click a new spot","Ctrl+V to paste"], tryIt:"Move a sentence from one paragraph to another using cut and paste.", demonstrateTask:"Describe what you moved." },
+          { id:"l2-docs-images-insert", title:"Insert images", learn:"Images can support your writing with a photo, diagram, or illustration.", watch:["Click Insert","Choose Image","Pick Upload, Search the web, or Drive"], tryIt:"Insert one image into a document.", demonstrateTask:"Confirm what image you added." },
+          { id:"l2-docs-images-resize", title:"Resize images", learn:"A giant image can overwhelm a page — resizing keeps your layout clean.", watch:["Click an image to select it","Drag a corner handle in or out"], tryIt:"Resize an image so it fits neatly on the page.", demonstrateTask:"Confirm you resized an image." },
+          { id:"l2-docs-tables", title:"Insert tables", learn:"Tables organize information into rows and columns, like a simple chart.", watch:["Click Insert","Choose Table","Pick the number of rows and columns"], tryIt:"Insert a 2x2 table and fill it with information.", demonstrateTask:"Confirm what your table shows." },
+          { id:"l2-docs-links", title:"Add hyperlinks", learn:"A hyperlink turns text into a clickable path to a website or another file.", watch:["Select text","Click Insert > Link (or Ctrl+K)","Paste the URL","Click Apply"], tryIt:"Turn a word into a link to a real website.", demonstrateTask:"Confirm which website you linked to." },
+          { id:"l2-docs-spellcheck", title:"Use spell check", learn:"Docs underlines possible spelling mistakes so you can review and fix them.", watch:["Look for a red squiggly underline","Right-click the word","Choose the correct spelling"], tryIt:"Fix a misspelled word using spell check.", demonstrateTask:"Confirm the word you fixed." },
+          { id:"l2-docs-find", title:"Use Find", learn:"Find lets you jump straight to a word instead of scrolling through pages.", watch:["Press Ctrl+F","Type the word you're looking for","Press Enter to jump to it"], tryIt:"Use Find to locate a word in a long document.", demonstrateTask:"Confirm the word you searched for." },
+          { id:"l2-docs-comments", title:"Add and respond to comments", learn:"Comments are notes attached to a specific spot in a document, without changing the text itself.", watch:["Select text","Click the comment icon (or Ctrl+Alt+M)","Type your note and click Comment","To reply, click Reply under an existing comment"], tryIt:"Add a comment to a document and reply to it.", demonstrateTask:"Confirm the comment and reply you made." },
+        ]},
+        { name:"Google Slides", badge:"Slide Designer", badgeIcon:"🎬", skills:[
+          { id:"l2-slides-create", title:"Create a presentation", learn:"Slides is where you build a presentation to show or present to others.", watch:["Open Drive","Click + New","Choose Google Slides"], tryIt:"Create a new blank presentation.", demonstrateTask:"Paste the link to your new presentation." },
+          { id:"l2-slides-manage", title:"Add, delete and rearrange slides", learn:"A presentation is a sequence of slides — you control the order and how many there are.", watch:["Right-click a slide in the left panel","Choose New slide, Delete, or drag it to reorder"], tryIt:"Add two new slides and put them in a logical order.", demonstrateTask:"Confirm how many slides your presentation has now." },
+          { id:"l2-slides-layouts", title:"Choose layouts", learn:"A layout is a template for a slide — title only, title and text, two columns, and more.", watch:["Click Insert > Layout","Pick the layout that fits your content"], tryIt:"Apply a layout to one of your slides.", demonstrateTask:"Confirm which layout you chose." },
+          { id:"l2-slides-text", title:"Add text", learn:"Text boxes hold the words on your slide, from titles to bullet points.", watch:["Click a text placeholder, or Insert > Text box","Click inside it and type"], tryIt:"Add a title and one line of text to a slide.", demonstrateTask:"Confirm what text you added." },
+          { id:"l2-slides-images", title:"Add images", learn:"Images make a slide more engaging than text alone.", watch:["Click Insert > Image","Choose Upload, Search the web, or Drive"], tryIt:"Add an image to a slide.", demonstrateTask:"Confirm what image you added." },
+          { id:"l2-slides-resize-move", title:"Resize and move objects", learn:"You can reposition and resize anything on a slide to fit your design.", watch:["Click an object to select it","Drag it to move, or drag a corner handle to resize"], tryIt:"Move and resize an image or text box.", demonstrateTask:"Confirm what you moved or resized." },
+          { id:"l2-slides-shapes", title:"Add shapes", learn:"Shapes can highlight information, act as buttons, or add visual structure.", watch:["Click Insert > Shape","Choose a shape category and shape","Click and drag on the slide to draw it"], tryIt:"Add a shape to a slide.", demonstrateTask:"Confirm what shape you added and why." },
+          { id:"l2-slides-consistent", title:"Create a consistent design", learn:"A strong presentation uses the same fonts, colors and layout style throughout — not a different look on every slide.", watch:["Pick one theme from Slide > Theme","Use the same title style and color scheme across slides"], tryIt:"Apply one theme to your whole presentation.", demonstrateTask:"Confirm the theme you applied." },
+          { id:"l2-slides-notes", title:"Add speaker notes", learn:"Speaker notes are reminders only you can see while presenting — the audience never sees them.", watch:["Click View > Show speaker notes","Click in the notes box under the slide","Type your notes"], tryIt:"Add a speaker note to one slide.", demonstrateTask:"Confirm what note you added." },
+          { id:"l2-slides-present", title:"Present a slideshow", learn:"Presenting shows your slides full-screen, one at a time.", watch:["Click Present, top right","Click through slides with the arrow keys or on-screen arrows","Press Esc to exit"], tryIt:"Present your slideshow from the first slide.", demonstrateTask:"Confirm you presented your slideshow." },
+        ]},
+        { name:"Google Sheets", badge:"Spreadsheet Starter", badgeIcon:"📊", skills:[
+          { id:"l2-sheets-cells", title:"Understand rows, columns and cells", learn:"A spreadsheet is a grid: rows run across, columns run down, and a cell is where one row meets one column.", watch:["Open a blank Sheet","Click cell A1","Notice the column letter (A) and row number (1) in the name box"], tryIt:"Click on cell C3 and describe where it is.", demonstrateTask:"Confirm which cell you clicked and its column/row." },
+          { id:"l2-sheets-enter", title:"Enter information", learn:"Click a cell and start typing — press Enter or Tab to move to the next one.", watch:["Click a cell","Type a number or word","Press Enter"], tryIt:"Enter five pieces of data into a row.", demonstrateTask:"Confirm what data you entered." },
+          { id:"l2-sheets-format", title:"Format cells", learn:"You can bold, color, or align cells to make a spreadsheet easier to read.", watch:["Select cells","Use the toolbar to bold, add color, or change alignment"], tryIt:"Format a header row so it stands out.", demonstrateTask:"Confirm what formatting you used." },
+          { id:"l2-sheets-table", title:"Create a simple table", learn:"A table in Sheets is really just labeled rows and columns of related data.", watch:["Type headers across row 1","Type your data in the rows below"], tryIt:"Build a small table with headers and at least 3 rows of data.", demonstrateTask:"Confirm what your table is about." },
+          { id:"l2-sheets-resize", title:"Resize columns", learn:"Widening a column stops long text or numbers from getting cut off.", watch:["Hover over the line between two column letters","Click and drag to resize","Or double-click the line to auto-fit"], tryIt:"Resize a column so all its text is visible.", demonstrateTask:"Confirm which column you resized." },
+          { id:"l2-sheets-sort", title:"Sort information", learn:"Sorting reorders rows by a column — smallest to largest, or A to Z.", watch:["Select your data range","Click Data > Sort range","Choose the column and order"], tryIt:"Sort your table by one column.", demonstrateTask:"Confirm which column you sorted by." },
+          { id:"l2-sheets-formulas", title:"Use basic formulas", learn:"A formula starts with an equals sign and lets Sheets calculate something for you.", watch:["Click an empty cell","Type =A1+A2","Press Enter to see the result"], tryIt:"Write one formula that adds two cells.", demonstrateTask:"Confirm the formula you wrote." },
+          { id:"l2-sheets-sum", title:"Use SUM", learn:"=SUM() adds up a whole range of numbers at once.", watch:["Click an empty cell","Type =SUM(A1:A5)","Press Enter"], tryIt:"Use SUM to total a column of numbers.", demonstrateTask:"Confirm the total you got." },
+          { id:"l2-sheets-average", title:"Use AVERAGE", learn:"=AVERAGE() finds the mean of a range of numbers.", watch:["Click an empty cell","Type =AVERAGE(A1:A5)","Press Enter"], tryIt:"Use AVERAGE on a row of numbers.", demonstrateTask:"Confirm the average you calculated." },
+          { id:"l2-sheets-minmax", title:"Use MIN and MAX", learn:"=MIN() finds the smallest number in a range; =MAX() finds the largest.", watch:["Type =MIN(A1:A5) in one cell","Type =MAX(A1:A5) in another"], tryIt:"Find the minimum and maximum of a set of numbers.", demonstrateTask:"Confirm the min and max you found." },
+          { id:"l2-sheets-chart", title:"Create a simple chart", learn:"A chart turns rows of numbers into a picture that's easier to understand at a glance.", watch:["Select your data, including headers","Click Insert > Chart","Choose a chart type from the Chart editor"], tryIt:"Create a chart from your data.", demonstrateTask:"Confirm what kind of chart you made." },
+          { id:"l2-sheets-read", title:"Read and interpret a spreadsheet", learn:"Being able to explain what a spreadsheet shows is just as important as building one.", watch:["Look at a spreadsheet's headers and data","Ask: what is the highest value? What is the trend?"], tryIt:"Write one sentence describing what a spreadsheet or chart shows.", demonstrateTask:"Write your one-sentence interpretation." },
+        ]},
+      ],
+      challenge: {
+        title:"Build a Mini Report",
+        description:"Combine Docs, Slides and Sheets into one small set of connected files.",
+        tasks:[
+          "Create a Doc with a heading, formatted text, and one image",
+          "Create a Sheet with a small table and one formula (SUM, AVERAGE, MIN or MAX)",
+          "Turn your Sheet data into a chart",
+          "Create a 3-slide presentation that includes your chart or table",
+          "Submit the links to all three files below"
+        ]
+      }
+    },
+    {
+      id: 3,
+      title: "I Can Collaborate",
+      short: "Collaborating",
+      icon: "🤝",
+      badge: "Collaboration Pro",
+      badgeIcon: "🏆",
+      intro: "Google Workspace is built for working with other people. This level covers how to share, comment, and edit alongside your classmates respectfully.",
+      sections: [
+        { name:"Collaboration", skills:[
+          { id:"l3-share-correctly", title:"Share documents correctly", learn:"Sharing correctly means giving the right person the right access — not sharing publicly by accident.", watch:["Click Share","Type the exact person's email","Double check the permission level before sending"], tryIt:"Share a file with a classmate or your teacher, checking the permission first.", demonstrateTask:"Confirm who you shared with and what permission you gave." },
+          { id:"l3-permissions", title:"Understand sharing permissions", learn:"Reviewing Viewer, Commenter and Editor again — now in a real collaboration, not just in theory.", watch:["Open Share on a file","Explain out loud what each role can and can't do"], tryIt:"Explain why you'd choose Commenter instead of Editor for peer feedback.", demonstrateTask:"Write your explanation." },
+          { id:"l3-work-shared", title:"Work in a shared document", learn:"When a file is shared with you, you can open it from 'Shared with me' in Drive.", watch:["Open Drive","Click 'Shared with me' in the sidebar","Open a file someone shared with you"], tryIt:"Open a file that's been shared with you and make an edit (if you're an Editor).", demonstrateTask:"Confirm which shared file you opened." },
+          { id:"l3-comments-add", title:"Add comments", learn:"Comments let you give feedback without changing someone else's actual words.", watch:["Select the text you want to comment on","Click the comment icon","Type helpful, specific feedback"], tryIt:"Add a comment to a classmate's shared document.", demonstrateTask:"Confirm the comment you added." },
+          { id:"l3-comments-reply", title:"Reply to comments", learn:"Replying keeps a conversation attached to the exact spot it's about.", watch:["Find a comment on your own document","Click Reply","Type your response","Click Resolve once it's handled"], tryIt:"Reply to a comment someone left on your work.", demonstrateTask:"Confirm what you replied." },
+          { id:"l3-suggesting", title:"Use Suggesting mode", learn:"Suggesting mode proposes edits instead of changing the text directly, so the owner can accept or reject them.", watch:["Click the pencil icon, top right","Choose Suggesting","Type an edit — it appears in a different color","The owner can Accept or Reject it"], tryIt:"Switch to Suggesting mode and propose one edit.", demonstrateTask:"Confirm the suggestion you made." },
+          { id:"l3-feedback", title:"Give appropriate digital feedback", learn:"Good feedback is specific and kind — 'this part is confusing, maybe add an example' beats 'this is bad'.", watch:["Read a classmate's work carefully","Write a comment that names what's working and one clear suggestion"], tryIt:"Give one piece of specific, kind feedback on a shared file.", demonstrateTask:"Confirm the feedback you gave." },
+          { id:"l3-classmates", title:"Work with classmates in a shared file", learn:"Multiple people can edit the same file at the same time — you'll see their cursor and name as they type.", watch:["Open a file shared with more than one person","Watch for another person's colored cursor","Edit different parts so you don't overwrite each other"], tryIt:"Co-edit a file with a partner at the same time.", demonstrateTask:"Confirm who you worked with." },
+          { id:"l3-version-history", title:"Understand version history", learn:"Google saves every past version of a file automatically, so nothing is ever truly lost.", watch:["Open a file","Click File > Version history > See version history"], tryIt:"Open the version history of a file you've edited.", demonstrateTask:"Confirm what you saw in version history." },
+          { id:"l3-version-recover", title:"Recover a previous version", learn:"If something goes wrong, you can jump back to an earlier version of a file.", watch:["Open Version history","Click an earlier version to preview it","Click 'Restore this version' if you want to bring it back"], tryIt:"Preview an earlier version of a file (you don't have to restore it).", demonstrateTask:"Confirm which earlier version you looked at." },
+          { id:"l3-appropriate-behaviour", title:"Understand appropriate behaviour in shared documents", learn:"Never delete someone else's work, use Suggesting mode when you're unsure, and always sign your comments if it's not clear who left them.", watch:["Think about a time someone edited your work without asking","Discuss what respectful collaboration looks like"], tryIt:"Write one classroom rule for working in shared documents.", demonstrateTask:"Write your rule." },
+        ]},
+      ],
+      challenge: {
+        title:"Peer Feedback Round",
+        description:"Practice real collaboration with a partner.",
+        tasks:[
+          "Share a document with a partner as a Commenter",
+          "Add at least one comment on your partner's shared document",
+          "Reply to a comment your partner left on yours",
+          "Check the version history of the shared document",
+          "Submit the link to the shared document below"
+        ]
+      }
+    },
+    {
+      id: 4,
+      title: "I Can Research",
+      short: "Researching",
+      icon: "🔎",
+      badge: "Smart Researcher",
+      badgeIcon: "🏆",
+      intro: "Anyone can search Google. This level is about searching smart, judging what you find, and using it honestly.",
+      sections: [
+        { name:"Research & Digital Citizenship", skills:[
+          { id:"l4-search", title:"Search Google effectively", learn:"A good search uses specific words, not a full question.", watch:["Open Google Search","Type specific keywords instead of a whole sentence","Scan the results before clicking"], tryIt:"Search for information on a topic using keywords, not a full sentence.", demonstrateTask:"Confirm the keywords you used." },
+          { id:"l4-keywords", title:"Choose useful keywords", learn:"Specific keywords like 'monarch butterfly migration route' beat vague ones like 'butterflies'.", watch:["Start broad, then narrow your words","Add a specific detail if you get too many results"], tryIt:"Turn a vague topic into a specific keyword search.", demonstrateTask:"Confirm your before-and-after keywords." },
+          { id:"l4-refine", title:"Refine a search", learn:"If your first search doesn't work, adjust your words instead of giving up.", watch:["Look at your first results","Add or remove a word","Try quotation marks around an exact phrase"], tryIt:"Refine a search that gave poor results the first time.", demonstrateTask:"Confirm how you changed your search." },
+          { id:"l4-ads", title:"Identify advertisements", learn:"Some search results are paid ads, marked 'Sponsored' or 'Ad', and appear before real results.", watch:["Search for a product or topic","Look for the small 'Sponsored' or 'Ad' label near the top results"], tryIt:"Find an example of a sponsored result.", demonstrateTask:"Confirm the ad you spotted and how you knew." },
+          { id:"l4-evaluate", title:"Evaluate websites", learn:"Not every website is trustworthy — check who made it and why before you believe it.", watch:["Open a website","Look for an About page or author","Ask: does this site want to inform me, or sell/convince me?"], tryIt:"Evaluate one website and decide if it seems trustworthy.", demonstrateTask:"Confirm your evaluation and reasoning." },
+          { id:"l4-creator", title:"Identify who created information", learn:"Knowing whether a doctor, a company, or a random blogger wrote something changes how much to trust it.", watch:["Look for an author name or organization","Check an About or Contact page"], tryIt:"Find out who created a specific source.", demonstrateTask:"Confirm who created it." },
+          { id:"l4-dates", title:"Check publication and update dates", learn:"Old information can be outdated, especially for science, technology, or current events.", watch:["Look near the title or bottom of an article for a date","Search for a more recent source if the date is old"], tryIt:"Find the publication date of a source.", demonstrateTask:"Confirm the date you found." },
+          { id:"l4-compare", title:"Compare multiple sources", learn:"If two or three sources agree, the information is more likely to be accurate.", watch:["Find two different sources on the same topic","Check whether they agree on the key facts"], tryIt:"Compare two sources on the same topic.", demonstrateTask:"Confirm whether they agreed." },
+          { id:"l4-unreliable", title:"Identify unreliable information", learn:"Warning signs include no author, extreme claims, no sources, or a site trying to sell you something.", watch:["Look for red flags: no author, wild claims, broken links","Ask if the site sources its own facts"], tryIt:"Find an example of an unreliable or questionable source.", demonstrateTask:"Confirm the red flags you noticed." },
+          { id:"l4-copyright", title:"Understand copyright", learn:"Copyright means the creator of an image, text, or video owns it, and you generally can't reuse it without permission.", watch:["Right-click an image online and notice you can't just take it freely","Look for images labeled for reuse (like Creative Commons)"], tryIt:"Explain why you can't just copy any image you find online.", demonstrateTask:"Write your explanation." },
+          { id:"l4-plagiarism", title:"Understand plagiarism", learn:"Plagiarism is using someone else's words or ideas as if they were your own.", watch:["Compare copying a sentence exactly vs. writing it in your own words","Discuss why plagiarism is a problem even if you don't mean to cheat"], tryIt:"Explain plagiarism in your own words.", demonstrateTask:"Write your explanation." },
+          { id:"l4-paraphrase", title:"Paraphrase instead of copying", learn:"Paraphrasing means rewriting an idea in your own words while keeping the original meaning.", watch:["Read a sentence from a source","Cover it up","Write the idea again in your own words"], tryIt:"Paraphrase one sentence from a source.", demonstrateTask:"Write your paraphrase." },
+          { id:"l4-credit", title:"Give credit to sources", learn:"Naming where an idea or fact came from is a basic form of honesty in research.", watch:["Note the website name and author for anything you use","Mention the source next to the fact in your notes"], tryIt:"Give credit for one fact you found in your research.", demonstrateTask:"Confirm the source you credited." },
+          { id:"l4-citation-list", title:"Create a basic source list", learn:"A simple source list records the sites you used so a reader could find them again.", watch:["List each website's title and URL","Keep the list at the end of your document"], tryIt:"Create a source list with at least two sources.", demonstrateTask:"Confirm your source list." },
+        ]},
+      ],
+      challenge: {
+        title:"Reliable Sources Challenge",
+        description:"Find and judge real sources on a topic.",
+        tasks:[
+          "Choose a research topic",
+          "Find three websites about it using specific keywords",
+          "Decide which sources are reliable, and explain why or why not",
+          "Paraphrase one fact from a reliable source in your own words",
+          "Submit a document with your sources, evaluations and paraphrase below"
+        ]
+      }
+    },
+    {
+      id: 5,
+      title: "I Can Work Independently",
+      short: "Working Independently",
+      icon: "🚀",
+      badge: "Independent Worker",
+      badgeIcon: "🏆",
+      isFinal: true,
+      intro: "This final level doesn't teach a new tool — it asks you to decide which tools to use, the way you'll need to for real assignments.",
+      project: {
+        title:"Final Project: Research & Present",
+        description:"Research an environmental issue and present what you learn, choosing the right Google tool for each part of the job.",
+        tasks:[
+          "Research an environmental issue using Google Search",
+          "Identify at least three reliable sources",
+          "Record your research in a Google Doc, organized with headings",
+          "Create a simple data table in Google Sheets",
+          "Create a chart from your Sheets data",
+          "Create a Google Slides presentation of your findings",
+          "Include images and source information in your Slides",
+          "Present your work",
+          "Share your completed files with your teacher using the correct permissions",
+          "Submit the links to all your files below"
+        ]
+      }
+    },
+  ],
+};
+
+// Flat lookup: skillId -> {skill, levelId, sectionName}
+const SKILL_INDEX = {};
+COURSE.levels.forEach(level=>{
+  (level.sections||[]).forEach(section=>{
+    section.skills.forEach(skill=>{
+      SKILL_INDEX[skill.id] = { skill, levelId: level.id, sectionName: section.name, sectionBadge: section.badge, sectionBadgeIcon: section.badgeIcon };
+    });
+  });
+});
+function allSkillIdsForLevel(levelId){
+  const level = COURSE.levels.find(l=>l.id===levelId);
+  if(!level || !level.sections) return [];
+  return level.sections.flatMap(s=>s.skills.map(sk=>sk.id));
+}
+function allSkillIdsForSection(levelId, sectionName){
+  const level = COURSE.levels.find(l=>l.id===levelId);
+  if(!level || !level.sections) return [];
+  const section = level.sections.find(s=>s.name===sectionName);
+  return section ? section.skills.map(sk=>sk.id) : [];
+}
+// Returns the next skill id after skillId within its level (flowing across
+// sections, e.g. from the last Docs skill into the first Slides skill), or
+// null if skillId is the last skill in the level.
+function nextSkillId(levelId, skillId){
+  const ids = allSkillIdsForLevel(levelId);
+  const idx = ids.indexOf(skillId);
+  if(idx===-1 || idx===ids.length-1) return null;
+  return ids[idx+1];
+}
+
+/* =========================================================================
+   TEACHING DIAGRAMS
+   Small generic (non-branded) app-mockup illustrations so "click + New"
+   actually shows a + New button, not just words. Built from a few reusable
+   pieces rather than one bespoke drawing per skill. Colors read from the
+   page's own CSS variables so they always match the site theme.
+   ========================================================================= */
+const DP = {
+  ink:'var(--ink)', inkSoft:'var(--ink-soft)', paper:'var(--paper)', panel:'var(--panel)',
+  line:'var(--line)', teal:'var(--teal)', tealDeep:'var(--teal-deep)', tealTint:'var(--teal-tint)',
+  amber:'var(--amber)', amberTint:'var(--amber-tint)', slateTint:'var(--slate-tint)',
+};
+function dEsc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function dWrap(text, maxChars){
+  const words = text.split(" "); const lines = []; let cur = "";
+  words.forEach(w=>{ if((cur+" "+w).trim().length > maxChars){ lines.push(cur.trim()); cur = w; } else cur = (cur+" "+w).trim(); });
+  if(cur) lines.push(cur);
+  return lines;
+}
+function dBrowserFrame(x,y,w,h,label){
+  const chromeH = 30;
+  return `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="8" fill="${DP.panel}" stroke="${DP.line}" stroke-width="1.5"/>
+    <rect x="${x}" y="${y}" width="${w}" height="${chromeH}" rx="8" fill="${DP.slateTint}"/>
+    <rect x="${x}" y="${y+chromeH-8}" width="${w}" height="8" fill="${DP.slateTint}"/>
+    <circle cx="${x+16}" cy="${y+15}" r="4" fill="${DP.line}"/><circle cx="${x+30}" cy="${y+15}" r="4" fill="${DP.line}"/><circle cx="${x+44}" cy="${y+15}" r="4" fill="${DP.line}"/>
+    <rect x="${x+64}" y="${y+7}" width="200" height="16" rx="8" fill="${DP.panel}" stroke="${DP.line}"/>
+    <text x="${x+72}" y="${y+19}" font-family="IBM Plex Sans, sans-serif" font-size="10" fill="${DP.inkSoft}">${dEsc(label)}</text>`;
+}
+function dSidebarList(x,y,w,h,items,highlightIdx){
+  const rowH = Math.min(30, h/items.length);
+  let out = `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${DP.panel}"/><line x1="${x+w}" y1="${y}" x2="${x+w}" y2="${y+h}" stroke="${DP.line}"/>`;
+  items.forEach((it,i)=>{
+    const ry = y + i*rowH + 6; const on = i===highlightIdx;
+    if(on) out += `<rect x="${x+6}" y="${ry-4}" width="${w-12}" height="${rowH-8}" rx="6" fill="${DP.tealTint}"/>`;
+    out += `<text x="${x+16}" y="${ry+10}" font-family="IBM Plex Sans, sans-serif" font-size="11" font-weight="${on?600:400}" fill="${on?DP.tealDeep:DP.inkSoft}">${dEsc(it)}</text>`;
+  });
+  return out;
+}
+function dToolbarRow(x,y,buttons){
+  let cx = x, out = "";
+  buttons.forEach(btn=>{
+    const w = 22 + btn.label.length*6.2;
+    if(btn.highlight){
+      out += `<rect x="${cx}" y="${y}" width="${w}" height="26" rx="13" fill="${DP.teal}"/><text x="${cx+w/2}" y="${y+17}" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="11" font-weight="600" fill="#fff">${dEsc(btn.label)}</text>`;
+    } else {
+      out += `<rect x="${cx}" y="${y}" width="${w}" height="26" rx="13" fill="${DP.panel}" stroke="${DP.line}"/><text x="${cx+w/2}" y="${y+17}" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="11" fill="${DP.inkSoft}">${dEsc(btn.label)}</text>`;
+    }
+    cx += w + 10;
+  });
+  return out;
+}
+function dFileGrid(x,y,w,count,highlightIdx,iconType){
+  const cols = 4, cellW = w/cols, cellH = 58;
+  let out = "";
+  for(let i=0;i<count;i++){
+    const col=i%cols, row=Math.floor(i/cols);
+    const cx = x + col*cellW + cellW/2, cy = y + row*cellH + 30;
+    const on = i===highlightIdx;
+    if(on) out += `<rect x="${cx-34}" y="${cy-26}" width="68" height="60" rx="8" fill="${DP.tealTint}"/>`;
+    if(iconType==="folder"){
+      out += `<path d="M${cx-16},${cy-8} h10 l4,5 h18 v18 h-32 z" fill="${on?DP.teal:'#c9cfce'}" stroke="${on?DP.tealDeep:DP.line}"/>`;
+    } else {
+      out += `<rect x="${cx-13}" y="${cy-14}" width="26" height="32" rx="2" fill="#fff" stroke="${on?DP.teal:DP.line}" stroke-width="1.5"/>
+        <line x1="${cx-8}" y1="${cy-6}" x2="${cx+8}" y2="${cy-6}" stroke="${DP.line}"/><line x1="${cx-8}" y1="${cy}" x2="${cx+8}" y2="${cy}" stroke="${DP.line}"/><line x1="${cx-8}" y1="${cy+6}" x2="${cx+4}" y2="${cy+6}" stroke="${DP.line}"/>`;
+    }
+    out += `<rect x="${cx-24}" y="${cy+20}" width="48" height="8" rx="2" fill="${on?DP.tealTint:DP.slateTint}"/>`;
+  }
+  return out;
+}
+function dDropdownMenu(x,y,items,highlightIdx){
+  const rowH = 26, w = 150, h = items.length*rowH + 8;
+  let out = `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="8" fill="${DP.panel}" stroke="${DP.line}" stroke-width="1.5" style="filter:drop-shadow(0 3px 6px rgba(18,32,49,0.18))"/>`;
+  items.forEach((it,i)=>{
+    const ry = y + 4 + i*rowH; const on = i===highlightIdx;
+    if(on) out += `<rect x="${x+4}" y="${ry}" width="${w-8}" height="${rowH-2}" rx="5" fill="${DP.tealTint}"/>`;
+    out += `<text x="${x+14}" y="${ry+17}" font-family="IBM Plex Sans, sans-serif" font-size="11" font-weight="${on?600:400}" fill="${on?DP.tealDeep:DP.inkSoft}">${dEsc(it)}</text>`;
+  });
+  return { svg: out, w, h };
+}
+function dCalloutBubble(x,y,w,text,arrowTo){
+  const lines = dWrap(text, 28); const h = 20 + lines.length*17;
+  let out = `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="10" fill="${DP.ink}"/>`;
+  lines.forEach((line,i)=>{ out += `<text x="${x+14}" y="${y+22+i*17}" font-family="IBM Plex Sans, sans-serif" font-size="11" fill="#fff">${dEsc(line)}</text>`; });
+  if(arrowTo){
+    const originY = arrowTo.y < y ? y : y+h, originX = x + w/2;
+    out += `<line x1="${originX}" y1="${originY}" x2="${arrowTo.x}" y2="${arrowTo.y}" stroke="${DP.ink}" stroke-width="2" stroke-dasharray="3,3"/><circle cx="${arrowTo.x}" cy="${arrowTo.y}" r="4" fill="none" stroke="${DP.ink}" stroke-width="2"/>`;
+  }
+  return { svg: out, h };
+}
+function dDialogBox(x,y,w,h,title,fields,primaryBtnLabel,highlightFieldIdx){
+  let out = `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="10" fill="${DP.panel}" stroke="${DP.line}" stroke-width="1.5" style="filter:drop-shadow(0 4px 10px rgba(18,32,49,0.18))"/>
+    <text x="${x+18}" y="${y+26}" font-family="IBM Plex Sans, sans-serif" font-size="13" font-weight="600" fill="${DP.ink}">${dEsc(title)}</text>
+    <line x1="${x}" y1="${y+38}" x2="${x+w}" y2="${y+38}" stroke="${DP.line}"/>`;
+  fields.forEach((f,i)=>{
+    const fy = y + 54 + i*40; const on = i===highlightFieldIdx;
+    out += `<text x="${x+18}" y="${fy}" font-family="IBM Plex Sans, sans-serif" font-size="10" fill="${DP.inkSoft}">${dEsc(f.label)}</text>
+      <rect x="${x+18}" y="${fy+6}" width="${w-36}" height="22" rx="5" fill="${on?DP.tealTint:'#fff'}" stroke="${on?DP.teal:DP.line}" stroke-width="${on?2:1}"/>
+      <text x="${x+28}" y="${fy+21}" font-family="IBM Plex Sans, sans-serif" font-size="11" fill="${DP.inkSoft}">${dEsc(f.value||"")}</text>`;
+  });
+  if(primaryBtnLabel){
+    const by = y+h-38;
+    out += `<rect x="${x+w-100}" y="${by}" width="82" height="26" rx="13" fill="${DP.teal}"/><text x="${x+w-59}" y="${by+17}" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="11" font-weight="600" fill="#fff">${dEsc(primaryBtnLabel)}</text>`;
+  }
+  return out;
+}
+function dAppIconGrid(x,y,labels,highlightIdx){
+  const cols = 3, cellW = 76, cellH = 50;
+  let out = "";
+  labels.forEach((label,i)=>{
+    const col=i%cols, row=Math.floor(i/cols);
+    const cx = x + col*cellW + cellW/2, cy = y + row*cellH + cellH/2;
+    const on = i===highlightIdx;
+    out += `<rect x="${cx-30}" y="${cy-18}" width="60" height="36" rx="8" fill="${on?DP.teal:DP.slateTint}"/>
+      <text x="${cx}" y="${cy+4}" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="9.5" font-weight="600" fill="${on?'#fff':DP.inkSoft}">${dEsc(label)}</text>`;
+  });
+  return out;
+}
+function dStatusPill(x,y,text,tone){
+  const w = 24 + text.length*6;
+  const bg = tone==="active" ? DP.amberTint : DP.tealTint;
+  const fg = tone==="active" ? DP.amber : DP.tealDeep;
+  return `<rect x="${x}" y="${y}" width="${w}" height="22" rx="11" fill="${bg}"/><text x="${x+w/2}" y="${y+15}" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="10" fill="${fg}">${dEsc(text)}</text>`;
+}
+function dWrapSvg(inner, w, h){
+  return `<svg viewBox="0 0 ${w} ${h}" width="${w}" height="${h}" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;display:block;" role="img" aria-hidden="true">
+    <rect width="${w}" height="${h}" fill="${DP.paper}" rx="8"/>${inner}</svg>`;
+}
+
+const SKILL_DIAGRAMS = {
+  "l1-login": ()=>{
+    const frame = dBrowserFrame(20,20,600,260,"accounts.google.com");
+    const dialog = dDialogBox(180,80,280,150,"Sign in",[{label:"School email",value:"you@yourschool.ca"},{label:"Password",value:"••••••••"}],"Next",0);
+    const callout = dCalloutBubble(60,250,260,"Type your full school email, then your password.",{x:320,y:150});
+    return dWrapSvg(frame+dialog+callout.svg, 640, 320);
+  },
+  "l1-workspace": ()=>{
+    const frame = dBrowserFrame(20,20,600,260,"Google Search");
+    const grid = dAppIconGrid(260,70,["Drive","Docs","Slides","Sheets","Gmail","Calendar","Meet","Photos","Forms"],-1);
+    const callout = dCalloutBubble(360,240,240,"Click the 9-dot grid (top right of any Google page) to see every Workspace app.",{x:490,y:106});
+    return dWrapSvg(frame+grid+callout.svg, 640, 320);
+  },
+  "l1-open-drive": ()=>{
+    const frame = dBrowserFrame(20,20,600,260,"Google Search");
+    const grid = dAppIconGrid(260,70,["Drive","Docs","Slides","Sheets","Gmail","Calendar","Meet","Photos","Forms"],0);
+    const callout = dCalloutBubble(360,240,240,"Click Drive — or type drive.google.com in the address bar.",{x:335,y:88});
+    return dWrapSvg(frame+grid+callout.svg, 640, 320);
+  },
+  "l1-find-files": ()=>{
+    const frame = dBrowserFrame(20,20,600,260,"Google Drive");
+    const sidebar = dSidebarList(20,50,120,230,["My Drive","Shared with me","Recent"],-1);
+    const tb = dToolbarRow(160,60,[{label:"+ New",highlight:false},{label:"Search Drive",highlight:true}]);
+    const grid = dFileGrid(160,110,440,120,2,1,"file");
+    const callout = dCalloutBubble(340,220,260,"Click the search bar and type part of the file's name.",{x:230,y:90});
+    return dWrapSvg(frame+sidebar+tb+grid+callout.svg, 640, 320);
+  },
+  "l1-create-files": ()=>{
+    const frame = dBrowserFrame(20,20,600,260,"Google Drive");
+    const sidebar = dSidebarList(20,50,120,230,["My Drive","Shared with me","Recent"],0);
+    const tb = dToolbarRow(160,60,[{label:"+ New",highlight:true},{label:"Search",highlight:false}]);
+    const grid = dFileGrid(160,110,440,3,-1,"file");
+    const menu = dDropdownMenu(160,96,["Folder","Google Docs","Google Slides","Google Sheets"],1);
+    const callout = dCalloutBubble(340,230,240,"Click + New, then choose Google Docs to start a new document.",{x:340,y:213});
+    return dWrapSvg(frame+sidebar+tb+grid+menu.svg+callout.svg, 640, 320);
+  },
+  "l1-create-folders": ()=>{
+    const frame = dBrowserFrame(20,20,600,260,"Google Drive");
+    const sidebar = dSidebarList(20,50,120,230,["My Drive","Shared with me","Recent"],0);
+    const tb = dToolbarRow(160,60,[{label:"+ New",highlight:true},{label:"Search",highlight:false}]);
+    const menu = dDropdownMenu(160,96,["Folder","Google Docs","Google Slides","Google Sheets"],0);
+    const dialog = dDialogBox(340,110,260,90,"New folder",[{label:"",value:"Science"}],"Create",0);
+    const callout = dCalloutBubble(340,215,260,"Choose Folder, type a name like Science, then click Create.",{x:470,y:110});
+    return dWrapSvg(frame+sidebar+tb+menu.svg+dialog+callout.svg, 640, 300);
+  },
+  "l1-rename-files": ()=>{
+    const frame = dBrowserFrame(20,20,600,260,"Google Drive");
+    const grid = dFileGrid(60,60,300,3,0,"file");
+    const menu = dDropdownMenu(150,60,["Open","Rename","Move to","Share"],1);
+    const callout = dCalloutBubble(330,190,270,"Right-click the file, choose Rename, then type a clear name.",{x:225,y:96});
+    return dWrapSvg(frame+grid+menu.svg+callout.svg, 640, 320);
+  },
+  "l1-move-files": ()=>{
+    const frame = dBrowserFrame(20,20,600,260,"Google Drive");
+    const grid = dFileGrid(60,60,180,2,0,"file");
+    const folderGrid = dFileGrid(300,60,140,1,-1,"folder");
+    const menu = dDropdownMenu(140,60,["Open","Rename","Move to","Share"],2);
+    const callout = dCalloutBubble(330,200,270,"Right-click the file, choose Move to, then pick the folder.",{x:225,y:117});
+    return dWrapSvg(frame+grid+folderGrid+menu.svg+callout.svg, 640, 320);
+  },
+  "l1-organize-drive": ()=>{
+    const frame = dBrowserFrame(20,20,600,260,"Google Drive");
+    const grid = dFileGrid(60,60,500,4,-1,"folder");
+    const callout = dCalloutBubble(160,220,320,"Group your loose files into subject folders — Science, Math, English.",null);
+    return dWrapSvg(frame+grid+callout.svg, 640, 300);
+  },
+  "l1-autosave": ()=>{
+    const frame = dBrowserFrame(20,20,600,220,"Untitled document");
+    const line1 = `<line x1="120" y1="90" x2="520" y2="90" stroke="${DP.line}"/><line x1="120" y1="115" x2="480" y2="115" stroke="${DP.line}"/><line x1="120" y1="140" x2="500" y2="140" stroke="${DP.line}"/>`;
+    const pill1 = dStatusPill(430,55,"Saving…","active");
+    const callout = dCalloutBubble(60,190,540,"As you type, watch this spot — it flips from Saving… to All changes saved. No save button needed.",null);
+    return dWrapSvg(frame+line1+pill1+callout.svg, 640, 280);
+  },
+  "l1-share-file": ()=>{
+    const frame = dBrowserFrame(20,20,600,220,"Untitled document");
+    const dialog = dDialogBox(160,55,320,140,"Share with people",[{label:"Add people",value:"teacher@yourschool.ca"}],"Send",0);
+    const callout = dCalloutBubble(60,210,540,"Click Share (top right), type the person's email, then click Send.",{x:400,y:135});
+    return dWrapSvg(frame+dialog+callout.svg, 640, 280);
+  },
+  "l1-permissions": ()=>{
+    const frame = dBrowserFrame(20,20,600,260,"Untitled document");
+    const dialog = dDialogBox(140,55,220,140,"Share with people",[{label:"Add people",value:"teacher@yourschool.ca"}],null,-1);
+    const menu = dDropdownMenu(380,110,["Viewer","Commenter","Editor"],2);
+    const callout = dCalloutBubble(370,230,250,"Click the role dropdown to choose Viewer, Commenter, or Editor.",{x:520,y:180});
+    return dWrapSvg(frame+dialog+menu.svg+callout.svg, 640, 320);
+  },
+  "l1-copy-link": ()=>{
+    const frame = dBrowserFrame(20,20,600,220,"Untitled document");
+    const dialog = dDialogBox(160,55,320,140,"Share with people",[{label:"",value:"docs.google.com/document/d/1AbC…"}],"Copy link",0);
+    const callout = dCalloutBubble(60,210,540,"Click Share, then Copy link — now you can paste it into your assignment.",{x:400,y:160});
+    return dWrapSvg(frame+dialog+callout.svg, 640, 280);
+  },
+};
+function renderSkillDiagram(skillId){
+  const fn = SKILL_DIAGRAMS[skillId];
+  if(!fn) return "";
+  return `<div style="max-width:520px;margin:0 auto 16px;border:1px solid var(--line);border-radius:8px;overflow:hidden;">${fn()}</div>`;
+}
+
+/* =========================================================================
+   STATE
+   Everything lives in this browser's localStorage. There is no server, so
+   a student's progress only exists on the device they used. Students can
+   export a small progress file; teachers import those files to build a
+   class view. This is an honest limitation of a no-backend static site.
+   ========================================================================= */
+const STORAGE_KEY = "workspaceReady_v1";
+
+function blankStudent(name, pinHash){
+  return {
+    id: "s" + Date.now() + Math.random().toString(36).slice(2,7),
+    name: name || "Student",
+    pinHash: pinHash || null, // a light deterrent, not real security — see simpleHash()
+    createdAt: new Date().toISOString(),
+    progress: {},        // skillId -> 'not-started' | 'learning' | 'pending' | 'achieved' | 'needs-practice'
+    submissions: {},      // skillId -> {link, note, date}
+    challenges: {},       // levelId -> 'not-started' | 'pending' | 'achieved' | 'needs-practice'
+    challengeSubmissions: {}, // levelId -> {links:[...], note, date}
+    finalProject: { status:"not-started", links:[], note:"", date:null },
+    certificateDate: null,
+  };
+}
+// Not cryptography — just stops a PIN sitting as plain text in localStorage
+// where a curious student could read it directly. Anyone opening devtools
+// and reading the actual app logic could still work around this; it's meant
+// to stop casual snooping/self-grading, not a determined technical bypass.
+function simpleHash(str){
+  let hash = 0;
+  const s = String(str);
+  for(let i=0;i<s.length;i++){
+    hash = ((hash<<5)-hash) + s.charCodeAt(i);
+    hash |= 0;
+  }
+  return hash.toString(36);
+}
+
+function loadState(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(raw){
+      const parsed = JSON.parse(raw);
+      if(parsed.teacherPinHash===undefined) parsed.teacherPinHash = null;
+      if(!parsed.teacherRoster) parsed.teacherRoster = [];
+      return parsed;
+    }
+  }catch(e){ console.warn("Could not read saved progress", e); }
+  return { students:{}, activeStudentId:null, role:"student", teacherRoster:[], teacherPinHash:null };
+}
+function saveState(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(STATE)); }
+
+let STATE = loadState();
+
+function activeStudent(){
+  return STATE.students[STATE.activeStudentId] || null;
+}
+function createStudent(name, pin){
+  const st = blankStudent(name, pin ? simpleHash(pin) : null);
+  STATE.students[st.id] = st;
+  STATE.activeStudentId = st.id;
+  saveState();
+  return st;
+}
+function switchStudent(id){
+  STATE.activeStudentId = id;
+  saveState();
+}
+function setRole(role){
+  STATE.role = role;
+  saveState();
+}
+
+function getSkillStatus(student, skillId){
+  return (student && student.progress[skillId]) || "not-started";
+}
+function setSkillStatus(student, skillId, status){
+  student.progress[skillId] = status;
+  saveState();
+}
+function submitSkillEvidence(student, skillId, link, note){
+  student.submissions[skillId] = { link: link||"", note: note||"", date: new Date().toISOString() };
+  student.progress[skillId] = "pending";
+  saveState();
+}
+function teacherMarkSkill(student, skillId, status){
+  student.progress[skillId] = status; // 'achieved' or 'needs-practice'
+  saveState();
+}
+
+function levelProgress(student, levelId){
+  const ids = allSkillIdsForLevel(levelId);
+  if(ids.length===0) return {achieved:0,total:0,pct:0};
+  const achieved = ids.filter(id=>getSkillStatus(student,id)==="achieved").length;
+  return { achieved, total: ids.length, pct: Math.round((achieved/ids.length)*100) };
+}
+function sectionProgress(student, levelId, sectionName){
+  const ids = allSkillIdsForSection(levelId, sectionName);
+  if(ids.length===0) return {achieved:0,total:0,pct:0};
+  const achieved = ids.filter(id=>getSkillStatus(student,id)==="achieved").length;
+  return { achieved, total: ids.length, pct: Math.round((achieved/ids.length)*100) };
+}
+function sectionBadgeEarned(student, levelId, sectionName){
+  const p = sectionProgress(student, levelId, sectionName);
+  return p.total>0 && p.achieved===p.total;
+}
+function levelChallengeStatus(student, levelId){
+  return (student && student.challenges[levelId]) || "not-started";
+}
+function levelBadgeEarned(student, levelId){
+  return levelChallengeStatus(student, levelId) === "achieved";
+}
+function levelUnlocked(student, levelId){
+  if(levelId===1) return true;
+  return levelBadgeEarned(student, levelId-1);
+}
+function finalProjectStatus(student){
+  return (student && student.finalProject && student.finalProject.status) || "not-started";
+}
+function courseComplete(student){
+  return COURSE.levels.every(l => l.isFinal ? finalProjectStatus(student)==="achieved" : levelBadgeEarned(student,l.id));
+}
+function overallPct(student){
+  const allIds = COURSE.levels.flatMap(l=>allSkillIdsForLevel(l.id));
+  if(allIds.length===0) return 0;
+  const achieved = allIds.filter(id=>getSkillStatus(student,id)==="achieved").length;
+  return Math.round((achieved/allIds.length)*100);
+}
+function allBadgesEarned(student){
+  const badges = [];
+  COURSE.levels.forEach(level=>{
+    (level.sections||[]).forEach(section=>{
+      if(section.badge && sectionBadgeEarned(student, level.id, section.name)){
+        badges.push({ name: section.badge, icon: section.badgeIcon||"🏆", levelId: level.id });
+      }
+    });
+    if(!level.isFinal && levelBadgeEarned(student, level.id)){
+      badges.push({ name: level.badge, icon: level.badgeIcon||"🏆", levelId: level.id, isLevelBadge:true });
+    }
+    if(level.isFinal && finalProjectStatus(student)==="achieved"){
+      badges.push({ name: level.badge, icon: level.badgeIcon||"🏆", levelId: level.id, isLevelBadge:true });
+    }
+  });
+  return badges;
+}
+function recentAchievements(student, limit){
+  const items = [];
+  Object.keys(student.progress).forEach(skillId=>{
+    if(student.progress[skillId]==="achieved" && student.submissions[skillId]){
+      const info = SKILL_INDEX[skillId];
+      if(info) items.push({ title: info.skill.title, date: student.submissions[skillId].date, levelId: info.levelId });
+    }
+  });
+  items.sort((a,b)=> new Date(b.date) - new Date(a.date));
+  return items.slice(0, limit||5);
+}
+
+function exportStudentFile(student){
+  const data = JSON.stringify(student, null, 2);
+  const blob = new Blob([data], {type:"application/json"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = (student.name || "student").replace(/[^a-z0-9]+/gi,"_") + "_progress.json";
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}
+function importStudentFile(file, callback){
+  const reader = new FileReader();
+  reader.onload = (e)=>{
+    try{
+      const parsed = JSON.parse(e.target.result);
+      if(!parsed.id || !parsed.progress) throw new Error("This doesn't look like a progress file.");
+      const existing = STATE.students[parsed.id];
+      if(existing){
+        const existingReviewed = Object.values(existing.progress||{}).some(s=>s==="achieved"||s==="needs-practice");
+        if(existingReviewed && confirm(`You've already reviewed some of ${existing.name}'s work. Importing this file will overwrite what you've marked so far with this file's data. Continue?`) === false){
+          callback(new Error("Import cancelled."));
+          return;
+        }
+      }
+      STATE.teacherRoster = STATE.teacherRoster.filter(id=>id!==parsed.id);
+      STATE.teacherRoster.push(parsed.id);
+      STATE.students[parsed.id] = parsed;
+      saveState();
+      callback(null, parsed);
+    }catch(err){
+      callback(err);
+    }
+  };
+  reader.onerror = ()=>callback(new Error("Could not read that file."));
+  reader.readAsText(file);
+}
+
+/* =========================================================================
+   RENDER HELPERS
+   ========================================================================= */
+function esc(str){
+  const d = document.createElement("div");
+  d.textContent = str==null ? "" : String(str);
+  return d.innerHTML;
+}
+// Only ever use a submitted "link" as a clickable href if it's actually http(s).
+// Without this, a pasted javascript: URI would sit in an <a href> and could run
+// script when clicked (e.g. after a teacher imports a student's file).
+function safeUrl(url){
+  if(typeof url !== "string") return "#";
+  const trimmed = url.trim();
+  if(/^https?:\/\//i.test(trimmed)) return trimmed;
+  return "#";
+}
+function chip(status){
+  const labels = {
+    "not-started":"Not started",
+    "learning":"Learning",
+    "pending":"Waiting for check",
+    "achieved":"Achieved",
+    "needs-practice":"Needs practice"
+  };
+  const icons = { "not-started":"○", "learning":"◐", "pending":"⏳", "achieved":"✓", "needs-practice":"↻" };
+  return `<span class="chip chip-${status}">${icons[status]||"○"} ${labels[status]||status}</span>`;
+}
+function segBar(student, skillIds){
+  return `<div class="seg-bar" role="img" aria-label="${skillIds.filter(id=>getSkillStatus(student,id)==='achieved').length} of ${skillIds.length} skills achieved">` +
+    skillIds.map(id=>{
+      const st = getSkillStatus(student,id);
+      const cls = st==="achieved" ? "achieved" : st==="pending" ? "pending" : st==="needs-practice" ? "needs-practice" : "";
+      return `<div class="seg ${cls}"></div>`;
+    }).join("") + `</div>`;
+}
+function progressBar(pct){
+  return `<div class="progress-row"><div class="progress-track"><div class="progress-fill" style="width:${pct}%"></div></div><span class="progress-pct">${pct}%</span></div>`;
+}
+function fmtDate(iso){
+  if(!iso) return "";
+  const d = new Date(iso);
+  return d.toLocaleDateString(undefined,{year:"numeric",month:"short",day:"numeric"});
+}
+function go(hash){ location.hash = hash; }
+function crumbNav(items){
+  // items: [{label, hash}] last one is current (no link)
+  return `<div class="crumb">` + items.map((it,i)=>{
+    if(i===items.length-1) return `<span>${esc(it.label)}</span>`;
+    return `<button data-nav="${it.hash}">${esc(it.label)}</button> <span aria-hidden="true">/</span> `;
+  }).join("") + `</div>`;
+}
+
+/* =========================================================================
+   TOPBAR
+   ========================================================================= */
+function renderTopbar(){
+  const route = parseHash();
+  const student = activeStudent();
+  const navItems = [
+    {hash:"#/dashboard", label:"Dashboard"},
+    {hash:"#/course-map", label:"Course Map"},
+  ];
+  return `
+  <div class="topbar">
+    <button class="brand" data-nav="#/dashboard" style="background:none;border:none;cursor:pointer;">
+      <span class="brand-mark">🧭</span> Workspace Ready
+    </button>
+    ${STATE.role==="student" ? `
+      <nav class="topnav" aria-label="Main">
+        ${navItems.map(it=>`<button data-nav="${it.hash}" class="${route.name===it.hash.replace('#/','') ? 'active':''}">${it.label}</button>`).join("")}
+      </nav>
+    ` : `
+      <nav class="topnav" aria-label="Main">
+        <button data-nav="#/teacher" class="${route.top==='teacher' ? 'active':''}">Class Dashboard</button>
+      </nav>
+    `}
+    <div class="role-pill" role="tablist" aria-label="Switch role">
+      <button role="tab" aria-selected="${STATE.role==='student'}" class="${STATE.role==='student'?'active':''}" data-role="student">Student</button>
+      <button role="tab" aria-selected="${STATE.role==='teacher'}" class="${STATE.role==='teacher'?'active':''}" data-role="teacher">Teacher</button>
+    </div>
+    ${STATE.role==="student" && student ? `<button class="btn btn-sm btn-secondary" data-nav="#/switch-student">${esc(student.name)}</button>` : ""}
+  </div>`;
+}
+
+/* =========================================================================
+   ONBOARDING / SWITCH STUDENT
+   ========================================================================= */
+function renderStudentPicker(){
+  const students = Object.values(STATE.students);
+  return `
+  <main id="main">
+    <div class="stack" style="max-width:480px;margin:40px auto 0;">
+      <div style="text-align:center;">
+        <h1 class="display" style="font-size:1.8rem;">Welcome to Workspace Ready</h1>
+        <p style="color:var(--ink-soft);margin-top:8px;">A Google Workspace skills course for Grade 7 &amp; 8. Pick your name and enter your code to continue, or start fresh.</p>
+      </div>
+      <div class="card stack">
+        ${students.length ? `
+          <div>
+            <label for="student-select">Continue as</label>
+            <select id="student-select">
+              <option value="">Choose your name…</option>
+              ${students.map(s=>`<option value="${s.id}">${esc(s.name)}</option>`).join("")}
+            </select>
+          </div>
+          <div>
+            <label for="student-pin">Your 4-digit code</label>
+            <input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="4" id="student-pin" placeholder="••••" />
+          </div>
+          <p id="continue-error" style="color:var(--coral);font-size:0.85rem;display:none;"></p>
+          <button class="btn btn-primary btn-block" id="continue-student-btn">Continue</button>
+          <div class="divider" style="margin:6px 0;"></div>
+        ` : ""}
+        <div>
+          <label for="new-student-name">New here? Type your name</label>
+          <input type="text" id="new-student-name" placeholder="e.g. Jordan P." />
+        </div>
+        <div class="grid-2">
+          <div>
+            <label for="new-student-pin">Choose a 4-digit code</label>
+            <input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="4" id="new-student-pin" placeholder="••••" />
+          </div>
+          <div>
+            <label for="new-student-pin-confirm">Type it again</label>
+            <input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="4" id="new-student-pin-confirm" placeholder="••••" />
+          </div>
+        </div>
+        <p style="color:var(--ink-soft);font-size:0.82rem;margin:0;">Pick a code only you know — it keeps your answers yours if you share a computer with a classmate. Don't forget it! If you do, your teacher can reset it.</p>
+        <p id="new-error" style="color:var(--coral);font-size:0.85rem;display:none;"></p>
+        <button class="btn btn-secondary btn-block" id="new-student-btn">Start the course</button>
+      </div>
+    </div>
+  </main>`;
+}
+
+/* =========================================================================
+   COURSE MAP
+   ========================================================================= */
+function renderCourseMap(){
+  const student = activeStudent();
+  const nodes = COURSE.levels.map(level=>{
+    const complete = level.isFinal ? finalProjectStatus(student)==="achieved" : levelBadgeEarned(student, level.id);
+    const unlocked = levelUnlocked(student, level.id);
+    const isCurrent = !complete && unlocked;
+    const cls = complete ? "complete" : (isCurrent ? "current" : "locked");
+    return `
+    <div class="map-node ${cls}">
+      <div class="map-dot">${complete ? "✓" : level.icon}</div>
+      <div class="map-body">
+        <h3>Level ${level.id} — ${esc(level.title)}</h3>
+        <p class="map-desc">${esc(level.intro)}</p>
+        <div style="margin-top:10px;">
+          ${unlocked
+            ? `<button class="btn btn-sm btn-primary" data-nav="#/level/${level.id}">${complete ? "Review level" : "Go to level"}</button>`
+            : `<span class="chip chip-not-started">🔒 Locked — finish Level ${level.id-1} first</span>`}
+        </div>
+      </div>
+    </div>`;
+  }).join("");
+  const finalNode = `
+    <div class="map-node ${courseComplete(student) ? 'complete' : 'locked'}">
+      <div class="map-dot">${courseComplete(student) ? "✓" : "🎓"}</div>
+      <div class="map-body">
+        <h3>Final Certificate</h3>
+        <p class="map-desc">Awarded once every level badge is achieved.</p>
+        ${courseComplete(student) ? `<button class="btn btn-sm btn-primary" data-nav="#/certificate">View certificate</button>` : ""}
+      </div>
+    </div>`;
+  return `
+  <main id="main">
+    <h1 style="font-size:1.6rem;margin-bottom:6px;">Your course map</h1>
+    <p style="color:var(--ink-soft);margin-bottom:28px;">Five levels, one path. Complete each level's challenge to unlock the next.</p>
+    <div class="course-map">${nodes}${finalNode}</div>
+  </main>`;
+}
+
+/* =========================================================================
+   STUDENT DASHBOARD
+   ========================================================================= */
+function renderDashboard(){
+  const student = activeStudent();
+  if(!student) { go("#/"); return renderStudentPicker(); }
+  const badges = allBadgesEarned(student);
+  const recents = recentAchievements(student, 5);
+  const currentLevel = COURSE.levels.find(l => l.isFinal ? finalProjectStatus(student)!=="achieved" : !levelBadgeEarned(student,l.id)) || COURSE.levels[COURSE.levels.length-1];
+
+  const levelRows = COURSE.levels.map(level=>{
+    if(level.isFinal){
+      const status = finalProjectStatus(student);
+      return `
+      <div class="row" style="justify-content:space-between;align-items:center;">
+        <div style="min-width:170px;"><strong>Level ${level.id}</strong> — ${esc(level.short)}</div>
+        <div style="flex:1;">${chip(status==="achieved"?"achieved":status==="pending"?"pending":"not-started")}</div>
+      </div>`;
+    }
+    const p = levelProgress(student, level.id);
+    return `
+    <div class="row" style="justify-content:space-between;align-items:center;">
+      <div style="min-width:170px;"><strong>Level ${level.id}</strong> — ${esc(level.short)}</div>
+      <div style="flex:1;">${progressBar(p.pct)}</div>
+      <div style="min-width:70px;text-align:right;color:var(--ink-soft);font-size:0.85rem;">${p.achieved}/${p.total}</div>
+    </div>`;
+  }).join(`<div class="divider" style="margin:12px 0;"></div>`);
+
+  return `
+  <main id="main">
+    <div class="row" style="justify-content:space-between;align-items:flex-end;margin-bottom:22px;">
+      <div>
+        <p class="eyebrow">Your dashboard</p>
+        <h1 style="font-size:1.7rem;">Hi, ${esc(student.name)}</h1>
+      </div>
+      <div class="row">
+        ${!student.pinHash ? `<button class="btn btn-secondary btn-sm" id="set-pin-btn">Set a code</button>` : ""}
+        <button class="btn btn-secondary btn-sm" id="export-btn">Export my progress file</button>
+      </div>
+    </div>
+
+    <div class="grid-2" style="align-items:stretch;">
+      <div class="card stack">
+        <h2 style="font-size:1.05rem;">Where am I?</h2>
+        ${progressBar(overallPct(student))}
+        <p style="color:var(--ink-soft);font-size:0.9rem;">Overall course progress</p>
+        <div class="divider"></div>
+        <div class="stack" style="gap:14px;">${levelRows}</div>
+      </div>
+
+      <div class="card stack">
+        <h2 style="font-size:1.05rem;">What do I need to do next?</h2>
+        <div class="banner banner-info">
+          <span>➡️</span>
+          <div>
+            <strong>${currentLevel.isFinal ? "Final Project" : "Level " + currentLevel.id}</strong>
+            <div style="font-size:0.88rem;margin-top:2px;">${esc(currentLevel.title)}</div>
+          </div>
+        </div>
+        <button class="btn btn-primary btn-block" data-nav="${currentLevel.isFinal ? '#/final' : '#/level/'+currentLevel.id}">Continue learning</button>
+        ${courseComplete(student) ? `<button class="btn btn-secondary btn-block" data-nav="#/certificate">🎓 View your certificate</button>` : ""}
+      </div>
+    </div>
+
+    <div class="grid-2" style="margin-top:16px;align-items:stretch;">
+      <div class="card">
+        <h2 style="font-size:1.05rem;margin-bottom:12px;">Badges</h2>
+        ${badges.length ? `<div class="row">${badges.map(b=>`
+          <div class="badge"><span class="badge-icon">${b.icon}</span><div><div class="badge-name">${esc(b.name)}</div><div class="badge-sub">Level ${b.levelId}</div></div></div>
+        `).join("")}</div>` : `<p style="color:var(--ink-soft);font-size:0.9rem;">No badges yet — complete a level's skills and its challenge to earn your first one.</p>`}
+      </div>
+      <div class="card">
+        <h2 style="font-size:1.05rem;margin-bottom:12px;">Recent achievements</h2>
+        ${recents.length ? `<ul class="step-list">${recents.map(r=>`
+          <li><span class="step-num">✓</span><div><div style="font-weight:600;font-size:0.92rem;">${esc(r.title)}</div><div style="color:var(--ink-soft);font-size:0.8rem;">${fmtDate(r.date)}</div></div></li>
+        `).join("")}</ul>` : `<p style="color:var(--ink-soft);font-size:0.9rem;">Nothing achieved yet — your first completed skill will show up here.</p>`}
+      </div>
+    </div>
+  </main>`;
+}
+
+/* =========================================================================
+   LEVEL PAGE
+   ========================================================================= */
+function renderLevel(levelId){
+  const level = COURSE.levels.find(l=>l.id===levelId);
+  const student = activeStudent();
+  if(!level || !student) { go("#/dashboard"); return renderDashboard(); }
+  if(!levelUnlocked(student, levelId)){
+    return `
+    <main id="main">
+      ${crumbNav([{label:"Dashboard",hash:"#/dashboard"},{label:"Level "+levelId}])}
+      <div class="banner banner-lock"><span>🔒</span><div><strong>This level is locked.</strong><p style="margin:4px 0 0;">Finish Level ${levelId-1}'s challenge first to unlock ${esc(level.title)}.</p></div></div>
+    </main>`;
+  }
+  const p = levelProgress(student, levelId);
+  const challengeStatus = levelChallengeStatus(student, levelId);
+  const allSkillsAchieved = p.total>0 && p.achieved===p.total;
+
+  const sections = level.sections.map(section=>{
+    const sp = sectionProgress(student, levelId, section.name);
+    const earned = sectionBadgeEarned(student, levelId, section.name);
+    return `
+    <div class="stack" style="margin-bottom:26px;">
+      <div class="row" style="justify-content:space-between;align-items:center;">
+        <h2 style="font-size:1.1rem;">${esc(section.name)}</h2>
+        ${section.badge ? `<span class="badge ${earned?'':'locked'}" style="min-width:0;"><span class="badge-icon">${section.badgeIcon||'🏆'}</span><div><div class="badge-name">${esc(section.badge)}</div><div class="badge-sub">${sp.achieved}/${sp.total} skills</div></div></span>` : ""}
+      </div>
+      ${segBar(student, section.skills.map(s=>s.id))}
+      <div class="grid-cards">
+        ${section.skills.map(skill=>{
+          const status = getSkillStatus(student, skill.id);
+          return `
+          <button class="skill-card" data-nav="#/skill/${skill.id}">
+            <div class="row" style="justify-content:space-between;align-items:flex-start;">
+              <span class="skill-icon">📄</span>
+              ${chip(status)}
+            </div>
+            <span class="sk-title">${esc(skill.title)}</span>
+          </button>`;
+        }).join("")}
+      </div>
+    </div>`;
+  }).join("");
+
+  return `
+  <main id="main" class="container-wide">
+    ${crumbNav([{label:"Dashboard",hash:"#/dashboard"},{label:"Level "+level.id}])}
+    <div class="row" style="justify-content:space-between;align-items:flex-start;margin-bottom:8px;">
+      <div>
+        <p class="eyebrow">Level ${level.id} of 5</p>
+        <h1 style="font-size:1.6rem;">${esc(level.title)}</h1>
+      </div>
+      <span class="badge ${levelBadgeEarned(student,levelId)?'':'locked'}"><span class="badge-icon">${level.badgeIcon}</span><div><div class="badge-name">${esc(level.badge)}</div><div class="badge-sub">Level badge</div></div></span>
+    </div>
+    <p style="color:var(--ink-soft);max-width:70ch;margin-bottom:18px;">${esc(level.intro)}</p>
+    ${progressBar(p.pct)}
+    <div class="divider"></div>
+    ${sections}
+    <div class="card" style="border-color:var(--teal);">
+      <div class="row" style="justify-content:space-between;align-items:center;">
+        <div>
+          <p class="eyebrow">Level Challenge</p>
+          <h2 style="font-size:1.15rem;">${esc(level.challenge.title)}</h2>
+        </div>
+        ${chip(challengeStatus==="not-started" ? "not-started" : challengeStatus)}
+      </div>
+      <p style="color:var(--ink-soft);margin-top:8px;">${esc(level.challenge.description)}</p>
+      <button class="btn ${allSkillsAchieved ? 'btn-primary':'btn-secondary'} btn-sm" style="margin-top:10px;" data-nav="#/challenge/${level.id}" ${allSkillsAchieved?'':'disabled'}>
+        ${challengeStatus==="achieved" ? "Review challenge" : "Start level challenge"}
+      </button>
+      ${!allSkillsAchieved ? `<p style="color:var(--ink-soft);font-size:0.85rem;margin-top:8px;">Achieve every skill above to unlock this challenge.</p>` : ""}
+    </div>
+  </main>`;
+}
+
+/* =========================================================================
+   SKILL PAGE — Learn / Watch / Try It / Demonstrate / Achieve
+   ========================================================================= */
+function renderSkill(skillId){
+  const info = SKILL_INDEX[skillId];
+  const student = activeStudent();
+  if(!info || !student) { go("#/dashboard"); return renderDashboard(); }
+  const { skill, levelId, sectionName } = info;
+  if(!levelUnlocked(student, levelId)){
+    return `
+    <main id="main">
+      ${crumbNav([{label:"Dashboard",hash:"#/dashboard"},{label:skill.title}])}
+      <div class="banner banner-lock"><span>🔒</span><div><strong>This level is locked.</strong><p style="margin:4px 0 0;">Finish Level ${levelId-1}'s challenge first to unlock this skill.</p></div></div>
+    </main>`;
+  }
+  const status = getSkillStatus(student, skillId);
+  const submission = student.submissions[skillId];
+  const nextId = nextSkillId(levelId, skillId);
+  const nextBtn = nextId
+    ? `<button class="btn btn-primary btn-sm" data-nav="#/skill/${nextId}">Next skill →</button>`
+    : `<button class="btn btn-primary btn-sm" data-nav="#/level/${levelId}">Back to Level ${levelId} overview →</button>`;
+
+  const watchSteps = skill.watch.map((step,i)=>`<li><span class="step-num">${i+1}</span><span>${esc(step)}</span></li>`).join("");
+
+  let demonstrateBlock = "";
+  if(status==="achieved"){
+    demonstrateBlock = `<div class="banner banner-success"><span>✓</span><div><strong>Skill Achieved</strong><p style="margin:4px 0 0;">Nice work — this one's locked in. You can revisit the lesson any time.</p></div></div>
+      <div class="row" style="margin-top:12px;">${nextBtn}</div>`;
+  } else if(status==="pending"){
+    demonstrateBlock = `
+      <div class="banner banner-info"><span>⏳</span><div><strong>Waiting for your teacher to check this.</strong>${submission&&submission.note?`<p style="margin:4px 0 0;">You wrote: "${esc(submission.note)}"</p>`:""}${submission&&submission.link?`<p style="margin:4px 0 0;">Link submitted: <a href="${esc(safeUrl(submission.link))}" target="_blank" rel="noopener noreferrer">${esc(submission.link)}</a></p>`:""}</div></div>
+      <div class="row" style="margin-top:12px;align-items:center;">${nextBtn}<button class="btn btn-ghost btn-sm" id="undo-submit">Undo and try again</button></div>`;
+  } else if(status==="needs-practice"){
+    demonstrateBlock = `
+      <div class="banner" style="background:var(--coral-tint);border-color:#e9bcac;color:var(--coral);"><span>↻</span><div><strong>Needs another try — that's completely normal.</strong><p style="margin:4px 0 0;">Review the steps above, then try again. Mastery, not speed.</p></div></div>
+      ${demonstrateForm(skill)}`;
+  } else {
+    demonstrateBlock = demonstrateForm(skill);
+  }
+
+  return `
+  <main id="main">
+    ${crumbNav([{label:"Dashboard",hash:"#/dashboard"},{label:"Level "+levelId,hash:"#/level/"+levelId},{label:skill.title}])}
+    <p class="eyebrow">${esc(sectionName)}</p>
+    <h1 style="font-size:1.5rem;margin-bottom:18px;">${esc(skill.title)}</h1>
+
+    <div class="stack">
+      <div class="card">
+        <p class="eyebrow" style="margin-bottom:8px;">1. Learn</p>
+        <p style="margin:0;">${esc(skill.learn)}</p>
+      </div>
+
+      <div class="card">
+        <p class="eyebrow" style="margin-bottom:10px;">2. Watch / See it</p>
+        ${renderSkillDiagram(skillId)}
+        <ol class="step-list" style="list-style:none;">${watchSteps}</ol>
+      </div>
+
+      <div class="card">
+        <p class="eyebrow" style="margin-bottom:8px;">3. Try it</p>
+        <p style="margin:0 0 12px;">${esc(skill.tryIt)}</p>
+        ${status==="not-started" ? `<button class="btn btn-secondary btn-sm" id="mark-tried">I tried it — take me to Show What You Know</button>` : `<span class="chip chip-achieved" style="background:var(--slate-tint);color:var(--ink-soft);border-color:var(--line);">✓ Practice logged</span>`}
+      </div>
+
+      <div class="card">
+        <p class="eyebrow" style="margin-bottom:8px;">4. Show what you know</p>
+        ${demonstrateBlock}
+      </div>
+    </div>
+  </main>`;
+}
+function demonstrateForm(skill){
+  return `
+    <form id="demonstrate-form" class="stack">
+      <p style="margin:0;">${esc(skill.demonstrateTask)}</p>
+      <div>
+        <label for="demo-note">What did you do? (a sentence is enough)</label>
+        <textarea id="demo-note" rows="2" placeholder="e.g. I created a folder called Science and moved my file into it."></textarea>
+      </div>
+      <div>
+        <label for="demo-link">Link to your file (optional, but helpful for your teacher)</label>
+        <input type="url" id="demo-link" placeholder="https://docs.google.com/…" />
+      </div>
+      <button type="submit" class="btn btn-primary" style="align-self:flex-start;">I did it!</button>
+    </form>`;
+}
+
+/* =========================================================================
+   LEVEL CHALLENGE PAGE
+   ========================================================================= */
+function renderChallenge(levelId){
+  const level = COURSE.levels.find(l=>l.id===levelId);
+  const student = activeStudent();
+  if(!level || !student) { go("#/dashboard"); return renderDashboard(); }
+  if(!levelUnlocked(student, levelId)){
+    return `
+    <main id="main">
+      ${crumbNav([{label:"Dashboard",hash:"#/dashboard"},{label:"Challenge"}])}
+      <div class="banner banner-lock"><span>🔒</span><div><strong>This level is locked.</strong><p style="margin:4px 0 0;">Finish Level ${levelId-1}'s challenge first.</p></div></div>
+    </main>`;
+  }
+  const status = levelChallengeStatus(student, levelId);
+  const sub = student.challengeSubmissions[levelId];
+  const tasks = level.challenge.tasks.map(t=>`<li><span class="step-num">✓</span><span>${esc(t)}</span></li>`).join("");
+  const p = levelProgress(student, levelId);
+  const skillsReady = p.total===0 || p.achieved===p.total;
+
+  let block;
+  if(status==="achieved"){
+    block = `<div class="banner banner-success"><span>🏆</span><div><strong>${esc(level.badge)} badge earned!</strong><p style="margin:4px 0 0;">You've unlocked the next level.</p></div></div>`;
+  } else if(!skillsReady){
+    block = `<div class="banner banner-lock"><span>🔒</span><div><strong>Not quite ready yet.</strong><p style="margin:4px 0 0;">Achieve all ${p.total} skills in this level first (${p.achieved}/${p.total} so far).</p></div></div>
+    <button class="btn btn-secondary btn-sm" style="margin-top:10px;" data-nav="#/level/${levelId}">Back to Level ${levelId}</button>`;
+  } else if(status==="pending"){
+    block = `<div class="banner banner-info"><span>⏳</span><div><strong>Submitted — waiting for your teacher to review.</strong>${sub&&sub.note?`<p style="margin:4px 0 0;">You wrote: "${esc(sub.note)}"</p>`:""}${sub&&sub.link?`<p style="margin:4px 0 0;">Link: <a href="${esc(safeUrl(sub.link))}" target="_blank" rel="noopener noreferrer">${esc(sub.link)}</a></p>`:""}</div></div>
+    <button class="btn btn-ghost" id="undo-challenge">Undo and resubmit</button>`;
+  } else {
+    block = `
+    <form id="challenge-form" class="stack">
+      <div>
+        <label for="challenge-note">Briefly describe how you completed the challenge</label>
+        <textarea id="challenge-note" rows="3"></textarea>
+      </div>
+      <div>
+        <label for="challenge-link">Link(s) to your file(s)</label>
+        <input type="url" id="challenge-link" placeholder="https://docs.google.com/…" />
+      </div>
+      <button type="submit" class="btn btn-primary" style="align-self:flex-start;">Submit challenge</button>
+    </form>${status==="needs-practice" ? `<p style="color:var(--coral);font-size:0.88rem;">Your teacher asked you to try this again — that's okay, resubmit when ready.</p>`:""}`;
+  }
+
+  return `
+  <main id="main">
+    ${crumbNav([{label:"Dashboard",hash:"#/dashboard"},{label:"Level "+levelId,hash:"#/level/"+levelId},{label:"Challenge"}])}
+    <p class="eyebrow">Level ${levelId} Challenge</p>
+    <h1 style="font-size:1.5rem;margin-bottom:14px;">${esc(level.challenge.title)}</h1>
+    <p style="color:var(--ink-soft);max-width:65ch;">${esc(level.challenge.description)}</p>
+    <div class="card" style="margin:18px 0;">
+      <p class="eyebrow" style="margin-bottom:10px;">What to do</p>
+      <ul class="step-list" style="list-style:none;">${tasks}</ul>
+    </div>
+    <div class="card">${block}</div>
+  </main>`;
+}
+
+/* =========================================================================
+   FINAL PROJECT PAGE (Level 5)
+   ========================================================================= */
+function renderFinal(){
+  const level = COURSE.levels.find(l=>l.isFinal);
+  const student = activeStudent();
+  if(!student) { go("#/dashboard"); return renderDashboard(); }
+  if(!levelUnlocked(student, level.id)){
+    return `<main id="main">${crumbNav([{label:"Dashboard",hash:"#/dashboard"},{label:"Final Project"}])}
+    <div class="banner banner-lock"><span>🔒</span><div><strong>Locked.</strong><p style="margin:4px 0 0;">Complete Level ${level.id-1} first.</p></div></div></main>`;
+  }
+  const status = finalProjectStatus(student);
+  const fp = student.finalProject;
+  const tasks = level.project.tasks.map(t=>`<li><span class="step-num">✓</span><span>${esc(t)}</span></li>`).join("");
+
+  let block;
+  if(status==="achieved"){
+    block = `<div class="banner banner-success"><span>🎓</span><div><strong>Independent Worker badge earned!</strong><p style="margin:4px 0 0;">You've completed the course.</p></div></div>
+    <button class="btn btn-primary" style="margin-top:12px;" data-nav="#/certificate">View your certificate</button>`;
+  } else if(status==="pending"){
+    block = `<div class="banner banner-info"><span>⏳</span><div><strong>Submitted — waiting for your teacher to review.</strong>${fp.note?`<p style="margin:4px 0 0;">You wrote: "${esc(fp.note)}"</p>`:""}${fp.links&&fp.links.length?`<p style="margin:4px 0 0;">Links: ${fp.links.map(l=>`<a href="${esc(safeUrl(l))}" target="_blank" rel="noopener noreferrer">${esc(l)}</a>`).join(", ")}</p>`:""}</div></div>
+    <button class="btn btn-ghost" id="undo-final">Undo and resubmit</button>`;
+  } else {
+    block = `
+    <form id="final-form" class="stack">
+      <div><label for="final-note">Briefly describe your final project</label><textarea id="final-note" rows="3"></textarea></div>
+      <div><label for="final-link">Links to your Doc, Sheet and Slides (paste one at a time, separated by commas)</label><input type="text" id="final-link" placeholder="https://docs.google.com/…, https://docs.google.com/spreadsheets/…" /></div>
+      <button type="submit" class="btn btn-primary" style="align-self:flex-start;">Submit final project</button>
+    </form>${status==="needs-practice" ? `<p style="color:var(--coral);font-size:0.88rem;">Your teacher asked for changes — update your files, then resubmit.</p>`:""}`;
+  }
+
+  return `
+  <main id="main">
+    ${crumbNav([{label:"Dashboard",hash:"#/dashboard"},{label:"Final Project"}])}
+    <p class="eyebrow">Level 5 — Final Project</p>
+    <h1 style="font-size:1.5rem;margin-bottom:14px;">${esc(level.project.title)}</h1>
+    <p style="color:var(--ink-soft);max-width:65ch;">${esc(level.project.description)}</p>
+    <div class="card" style="margin:18px 0;">
+      <p class="eyebrow" style="margin-bottom:10px;">What to do</p>
+      <ul class="step-list" style="list-style:none;">${tasks}</ul>
+    </div>
+    <div class="card">${block}</div>
+  </main>`;
+}
+
+/* =========================================================================
+   CERTIFICATE
+   ========================================================================= */
+function renderCertificate(){
+  const student = activeStudent();
+  if(!student || !courseComplete(student)){ go("#/dashboard"); return renderDashboard(); }
+  if(!student.certificateDate){ student.certificateDate = new Date().toISOString(); saveState(); }
+  const badges = allBadgesEarned(student).filter(b=>b.isLevelBadge);
+  return `
+  <main id="main">
+    <div class="no-print" style="margin-bottom:16px;"><button class="btn btn-secondary btn-sm" onclick="window.print()">Print / Save as PDF</button></div>
+    <div class="certificate">
+      <p class="eyebrow">Workspace Ready</p>
+      <h1>Google Workspace Independent User</h1>
+      <p style="color:var(--ink-soft);">This certifies that</p>
+      <div class="cert-name">${esc(student.name)}</div>
+      <p style="color:var(--ink-soft);">has completed all five levels of the Google Workspace skills course</p>
+      <p style="margin-top:6px;font-weight:600;">${fmtDate(student.certificateDate)}</p>
+      <div class="divider" style="max-width:400px;margin:26px auto;"></div>
+      <p class="eyebrow" style="margin-bottom:10px;">Skills mastered</p>
+      <div class="row" style="justify-content:center;">
+        ${badges.map(b=>`<div class="badge"><span class="badge-icon">${b.icon}</span><span class="badge-name">${esc(b.name)}</span></div>`).join("")}
+      </div>
+    </div>
+  </main>`;
+}
+
+/* =========================================================================
+   TEACHER DASHBOARD
+   ========================================================================= */
+function renderTeacherDashboard(){
+  // Any student created on this device is already visible here. Import is only
+  // needed to bring in a student who did the course on a different device/browser.
+  const roster = Object.values(STATE.students).sort((a,b)=> new Date(a.createdAt) - new Date(b.createdAt));
+  const pendingCount = roster.reduce((sum,st)=>{
+    let n = Object.values(st.progress).filter(s=>s==="pending").length;
+    n += Object.values(st.challenges).filter(s=>s==="pending").length;
+    if(finalProjectStatus(st)==="pending") n++;
+    return sum+n;
+  },0);
+
+  const rows = roster.map(st=>{
+    const cells = COURSE.levels.map(level=>{
+      if(level.isFinal){
+        const s = finalProjectStatus(st);
+        return `<td>${s==="achieved" ? "✓" : s==="pending" ? "⏳" : s==="needs-practice" ? "↻" : "—"}</td>`;
+      }
+      const complete = levelBadgeEarned(st, level.id);
+      const p = levelProgress(st, level.id);
+      if(complete) return `<td>✓</td>`;
+      if(p.achieved===0) return `<td>—</td>`;
+      return `<td>${p.achieved}/${p.total}</td>`;
+    }).join("");
+    return `<tr data-nav="#/teacher/student/${st.id}" tabindex="0" role="button" aria-label="View ${esc(st.name)}'s details"><td><strong>${esc(st.name)}</strong></td>${cells}<td>${overallPct(st)}%</td></tr>`;
+  }).join("");
+
+  return `
+  <main id="main" class="container-wide">
+    <div class="row" style="justify-content:space-between;align-items:flex-end;margin-bottom:20px;">
+      <div>
+        <p class="eyebrow">Teacher Dashboard</p>
+        <h1 style="font-size:1.6rem;">Class overview</h1>
+      </div>
+      <div class="row">
+        ${pendingCount>0 ? `<span class="chip chip-pending">⏳ ${pendingCount} item${pendingCount===1?'':'s'} to review</span>` : ""}
+        <label class="btn btn-secondary btn-sm" style="cursor:pointer;">Import from another device<input type="file" id="import-file" accept="application/json" style="display:none;"></label>
+      </div>
+    </div>
+    ${roster.length ? `
+    <div class="card" style="overflow-x:auto;">
+      <table class="class-table">
+        <thead><tr><th>Student</th>${COURSE.levels.map(l=>`<th>Lvl ${l.id}</th>`).join("")}<th>Overall</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>
+    ` : `
+    <div class="empty-state card">
+      <p style="font-size:1.05rem;font-weight:600;color:var(--ink);">No students yet on this device</p>
+      <p>Students who use the course on this device will show up here automatically. If a student worked on a different device, have them click "Export my progress file" on their dashboard, then import that file here with the button above.</p>
+    </div>`}
+  </main>`;
+}
+
+function renderTeacherStudent(studentId){
+  const student = STATE.students[studentId];
+  if(!student){ go("#/teacher"); return renderTeacherDashboard(); }
+
+  const levelBlocks = COURSE.levels.map(level=>{
+    if(level.isFinal){
+      const status = finalProjectStatus(student);
+      const fp = student.finalProject;
+      return `
+      <div class="card" style="margin-bottom:16px;">
+        <div class="row" style="justify-content:space-between;align-items:center;">
+          <h3 style="font-size:1rem;">Level ${level.id} — Final Project</h3>
+          ${chip(status)}
+        </div>
+        ${fp.note ? `<p style="margin-top:8px;color:var(--ink-soft);font-size:0.9rem;">"${esc(fp.note)}"</p>` : ""}
+        ${fp.links && fp.links.length ? `<p style="font-size:0.88rem;">${fp.links.map(l=>`<a href="${esc(safeUrl(l))}" target="_blank" rel="noopener noreferrer">${esc(l)}</a>`).join(", ")}</p>` : ""}
+        ${status==="pending" ? `
+          <div class="row" style="margin-top:10px;">
+            <button class="btn btn-sm btn-primary" data-verify-final="achieved">✓ Mark achieved</button>
+            <button class="btn btn-sm btn-danger" data-verify-final="needs-practice">↻ Needs practice</button>
+          </div>` : ""}
+      </div>`;
+    }
+    const skillRows = level.sections.flatMap(section=>section.skills).map(skill=>{
+      const status = getSkillStatus(student, skill.id);
+      const sub = student.submissions[skill.id];
+      return `
+      <div class="row" style="justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--line);">
+        <div style="flex:1;min-width:200px;">
+          <div style="font-size:0.92rem;">${esc(skill.title)}</div>
+          ${sub && sub.note ? `<div style="font-size:0.8rem;color:var(--ink-soft);">"${esc(sub.note)}"${sub.link ? ' — <a href="'+esc(safeUrl(sub.link))+'" target="_blank" rel="noopener noreferrer">link</a>':''}</div>` : ""}
+        </div>
+        ${chip(status)}
+        ${status==="pending" ? `
+          <div class="row" style="gap:6px;">
+            <button class="btn btn-sm btn-primary" data-verify-skill="${skill.id}" data-verify-status="achieved">✓</button>
+            <button class="btn btn-sm btn-danger" data-verify-skill="${skill.id}" data-verify-status="needs-practice">↻</button>
+          </div>` : ""}
+      </div>`;
+    }).join("");
+    const chStatus = levelChallengeStatus(student, level.id);
+    const chSub = student.challengeSubmissions[level.id];
+    return `
+    <div class="card" style="margin-bottom:16px;">
+      <div class="row" style="justify-content:space-between;align-items:center;margin-bottom:6px;">
+        <h3 style="font-size:1rem;">Level ${level.id} — ${esc(level.short)}</h3>
+        <span style="font-size:0.85rem;color:var(--ink-soft);">${levelProgress(student, level.id).achieved}/${levelProgress(student, level.id).total} skills</span>
+      </div>
+      ${skillRows}
+      <div class="row" style="justify-content:space-between;align-items:center;padding-top:12px;">
+        <div>
+          <strong style="font-size:0.9rem;">Level Challenge</strong>
+          ${chSub && chSub.note ? `<div style="font-size:0.8rem;color:var(--ink-soft);">"${esc(chSub.note)}"${chSub.link?' — <a href="'+esc(safeUrl(chSub.link))+'" target="_blank" rel="noopener noreferrer">link</a>':''}</div>`:""}
+        </div>
+        ${chip(chStatus)}
+        ${chStatus==="pending" ? `
+          <div class="row" style="gap:6px;">
+            <button class="btn btn-sm btn-primary" data-verify-challenge="${level.id}" data-verify-status="achieved">✓</button>
+            <button class="btn btn-sm btn-danger" data-verify-challenge="${level.id}" data-verify-status="needs-practice">↻</button>
+          </div>` : ""}
+      </div>
+    </div>`;
+  }).join("");
+
+  return `
+  <main id="main" class="container-wide">
+    ${crumbNav([{label:"Class overview",hash:"#/teacher"},{label:student.name}])}
+    <div class="row" style="justify-content:space-between;align-items:center;margin-bottom:18px;">
+      <h1 style="font-size:1.5rem;">${esc(student.name)}</h1>
+      <div class="row" style="align-items:center;">
+        <span style="font-family:'Space Grotesk',sans-serif;font-weight:600;">${overallPct(student)}% complete</span>
+        <button class="btn btn-sm btn-secondary" id="reset-student-pin">Reset their code</button>
+      </div>
+    </div>
+    ${levelBlocks}
+  </main>`;
+}
+
+/* =========================================================================
+   ROUTER
+   ========================================================================= */
+function parseHash(){
+  const h = location.hash.replace(/^#\//,"");
+  const parts = h.split("/").filter(Boolean);
+  return { top: parts[0]||"", parts, name: parts[0]||"" };
+}
+
+function render(){
+  const r = parseHash();
+  let bodyHtml = "";
+
+  // Teacher-only routes short-circuit role handling
+  if(STATE.role==="teacher"){
+    if(r.top==="teacher" && r.parts[1]==="student" && r.parts[2]){
+      bodyHtml = renderTeacherStudent(r.parts[2]);
+    } else {
+      if(location.hash!=="#/teacher") location.hash = "#/teacher";
+      bodyHtml = renderTeacherDashboard();
+    }
+    document.getElementById("app").innerHTML = renderTopbar() + bodyHtml;
+    wireEvents();
+    return;
+  }
+
+  // Student role
+  if(!activeStudent() || r.top==="switch-student" || r.top===""){
+    document.getElementById("app").innerHTML = renderTopbar() + renderStudentPicker();
+    wireEvents();
+    return;
+  }
+
+  switch(r.top){
+    case "dashboard": bodyHtml = renderDashboard(); break;
+    case "course-map": bodyHtml = renderCourseMap(); break;
+    case "level": bodyHtml = renderLevel(parseInt(r.parts[1],10)); break;
+    case "skill": bodyHtml = renderSkill(r.parts[1]); break;
+    case "challenge": bodyHtml = renderChallenge(parseInt(r.parts[1],10)); break;
+    case "final": bodyHtml = renderFinal(); break;
+    case "certificate": bodyHtml = renderCertificate(); break;
+    default: bodyHtml = renderDashboard();
+  }
+  document.getElementById("app").innerHTML = renderTopbar() + bodyHtml;
+  wireEvents();
+}
+
+/* =========================================================================
+   EVENT WIRING (delegated, re-run after every render)
+   ========================================================================= */
+function wireEvents(){
+  document.querySelectorAll("[data-nav]").forEach(el=>{
+    el.addEventListener("click", ()=> go(el.getAttribute("data-nav")));
+    // Elements like <tr> aren't natively keyboard-activatable even with tabindex,
+    // so give anything non-button a keydown handler for Enter/Space.
+    if(el.tagName!=="BUTTON"){
+      el.addEventListener("keydown",(e)=>{
+        if(e.key==="Enter" || e.key===" "){
+          e.preventDefault();
+          go(el.getAttribute("data-nav"));
+        }
+      });
+    }
+  });
+  document.querySelectorAll("[data-role]").forEach(el=>{
+    el.addEventListener("click", ()=>{
+      const target = el.getAttribute("data-role");
+      if(target==="teacher" && STATE.role!=="teacher"){
+        if(!STATE.teacherPinHash){
+          const pin = prompt("Set a teacher code (4+ digits) so students can't switch into Teacher mode themselves. You'll enter this each time you switch.");
+          if(!pin) return;
+          const confirmPin = prompt("Type it again to confirm:");
+          if(pin !== confirmPin){ alert("Those didn't match — click Teacher again to try once more."); return; }
+          STATE.teacherPinHash = simpleHash(pin);
+          saveState();
+        } else {
+          const attempt = prompt("Enter your teacher code:");
+          if(attempt===null) return;
+          if(simpleHash(attempt) !== STATE.teacherPinHash){ alert("That code isn't right."); return; }
+        }
+      }
+      setRole(target);
+      location.hash = target==="teacher" ? "#/teacher" : "#/dashboard";
+      render();
+    });
+  });
+  document.querySelectorAll("tr[data-nav]").forEach(el=>{
+    el.style.cursor="pointer";
+  });
+
+  const continueBtn = document.getElementById("continue-student-btn");
+  if(continueBtn) continueBtn.addEventListener("click", ()=>{
+    const sel = document.getElementById("student-select");
+    const pinInput = document.getElementById("student-pin");
+    const errorEl = document.getElementById("continue-error");
+    const showError = (msg)=>{ errorEl.textContent = msg; errorEl.style.display = "block"; };
+    if(!sel.value){ showError("Choose your name from the list first."); return; }
+    const student = STATE.students[sel.value];
+    const pin = pinInput.value.trim();
+    if(student.pinHash){
+      if(!pin){ showError("Enter your 4-digit code."); pinInput.focus(); return; }
+      if(simpleHash(pin) !== student.pinHash){ showError("That code doesn't match. Try again, or ask your teacher to reset it."); pinInput.value=""; pinInput.focus(); return; }
+    }
+    switchStudent(sel.value); go("#/dashboard"); render();
+  });
+  const newBtn = document.getElementById("new-student-btn");
+  if(newBtn) newBtn.addEventListener("click", ()=>{
+    const nameInput = document.getElementById("new-student-name");
+    const pinInput = document.getElementById("new-student-pin");
+    const pinConfirmInput = document.getElementById("new-student-pin-confirm");
+    const errorEl = document.getElementById("new-error");
+    const showError = (msg)=>{ errorEl.textContent = msg; errorEl.style.display = "block"; };
+    const name = nameInput.value.trim();
+    const pin = pinInput.value.trim();
+    const pinConfirm = pinConfirmInput.value.trim();
+    if(!name){ showError("Type your name first."); nameInput.focus(); return; }
+    if(!/^\d{4}$/.test(pin)){ showError("Your code should be exactly 4 digits."); pinInput.focus(); return; }
+    if(pin !== pinConfirm){ showError("Those two codes don't match — try typing it again."); pinConfirmInput.value=""; pinConfirmInput.focus(); return; }
+    createStudent(name, pin);
+    go("#/dashboard"); render();
+  });
+
+  const exportBtn = document.getElementById("export-btn");
+  if(exportBtn) exportBtn.addEventListener("click", ()=> exportStudentFile(activeStudent()));
+
+  const setPinBtn = document.getElementById("set-pin-btn");
+  if(setPinBtn) setPinBtn.addEventListener("click", ()=>{
+    const pin = prompt("Choose a 4-digit code so only you can access your work:");
+    if(!pin) return;
+    if(!/^\d{4}$/.test(pin)){ alert("Your code should be exactly 4 digits."); return; }
+    const confirmPin = prompt("Type it again to confirm:");
+    if(pin !== confirmPin){ alert("Those didn't match — click Set a code to try again."); return; }
+    activeStudent().pinHash = simpleHash(pin);
+    saveState();
+    render();
+  });
+
+  const markTried = document.getElementById("mark-tried");
+  if(markTried) markTried.addEventListener("click", ()=>{
+    const skillId = parseHash().parts[1];
+    setSkillStatus(activeStudent(), skillId, "learning");
+    render();
+  });
+
+  const demoForm = document.getElementById("demonstrate-form");
+  if(demoForm) demoForm.addEventListener("submit",(e)=>{
+    e.preventDefault();
+    const skillId = parseHash().parts[1];
+    const note = document.getElementById("demo-note").value.trim();
+    const link = document.getElementById("demo-link").value.trim();
+    submitSkillEvidence(activeStudent(), skillId, link, note);
+    render();
+  });
+  const undoSubmit = document.getElementById("undo-submit");
+  if(undoSubmit) undoSubmit.addEventListener("click", ()=>{
+    const skillId = parseHash().parts[1];
+    setSkillStatus(activeStudent(), skillId, "learning");
+    render();
+  });
+
+  const challengeForm = document.getElementById("challenge-form");
+  if(challengeForm) challengeForm.addEventListener("submit",(e)=>{
+    e.preventDefault();
+    const levelId = parseInt(parseHash().parts[1],10);
+    const note = document.getElementById("challenge-note").value.trim();
+    const link = document.getElementById("challenge-link").value.trim();
+    const student = activeStudent();
+    student.challengeSubmissions[levelId] = { link, note, date: new Date().toISOString() };
+    student.challenges[levelId] = "pending";
+    saveState();
+    render();
+  });
+  const undoChallenge = document.getElementById("undo-challenge");
+  if(undoChallenge) undoChallenge.addEventListener("click", ()=>{
+    const levelId = parseInt(parseHash().parts[1],10);
+    activeStudent().challenges[levelId] = "not-started";
+    saveState(); render();
+  });
+
+  const finalForm = document.getElementById("final-form");
+  if(finalForm) finalForm.addEventListener("submit",(e)=>{
+    e.preventDefault();
+    const note = document.getElementById("final-note").value.trim();
+    const linksRaw = document.getElementById("final-link").value.trim();
+    const links = linksRaw.split(",").map(s=>s.trim()).filter(Boolean);
+    const student = activeStudent();
+    student.finalProject = { status:"pending", links, note, date: new Date().toISOString() };
+    saveState();
+    render();
+  });
+  const undoFinal = document.getElementById("undo-final");
+  if(undoFinal) undoFinal.addEventListener("click", ()=>{
+    activeStudent().finalProject.status = "not-started";
+    saveState(); render();
+  });
+
+  const importFile = document.getElementById("import-file");
+  if(importFile) importFile.addEventListener("change",(e)=>{
+    const file = e.target.files[0];
+    if(!file) return;
+    importStudentFile(file, (err)=>{
+      if(err){ alert("Import failed: " + err.message); return; }
+      render();
+    });
+  });
+
+  document.querySelectorAll("[data-verify-skill]").forEach(el=>{
+    el.addEventListener("click", ()=>{
+      const skillId = el.getAttribute("data-verify-skill");
+      const status = el.getAttribute("data-verify-status");
+      const student = STATE.students[parseHash().parts[2]];
+      teacherMarkSkill(student, skillId, status);
+      render();
+    });
+  });
+  document.querySelectorAll("[data-verify-challenge]").forEach(el=>{
+    el.addEventListener("click", ()=>{
+      const levelId = parseInt(el.getAttribute("data-verify-challenge"),10);
+      const status = el.getAttribute("data-verify-status");
+      const student = STATE.students[parseHash().parts[2]];
+      student.challenges[levelId] = status;
+      saveState();
+      render();
+    });
+  });
+  document.querySelectorAll("[data-verify-final]").forEach(el=>{
+    el.addEventListener("click", ()=>{
+      const status = el.getAttribute("data-verify-final");
+      const student = STATE.students[parseHash().parts[2]];
+      student.finalProject.status = status;
+      saveState();
+      render();
+    });
+  });
+
+  const resetPinBtn = document.getElementById("reset-student-pin");
+  if(resetPinBtn) resetPinBtn.addEventListener("click", ()=>{
+    const student = STATE.students[parseHash().parts[2]];
+    if(!student) return;
+    if(confirm(`Clear ${student.name}'s code? They'll be able to set a new one next time they log in.`)){
+      student.pinHash = null;
+      saveState();
+      alert(`${student.name}'s code has been cleared.`);
+    }
+  });
+}
+
+window.addEventListener("hashchange", render);
+window.addEventListener("DOMContentLoaded", render);
+</script>
+</body>
+</html>
