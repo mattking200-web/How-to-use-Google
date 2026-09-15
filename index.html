@@ -649,6 +649,91 @@ function dStatusPill(x,y,text,tone){
   const fg = tone==="active" ? DP.amber : DP.tealDeep;
   return `<rect x="${x}" y="${y}" width="${w}" height="22" rx="11" fill="${bg}"/><text x="${x+w/2}" y="${y+15}" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="10" fill="${fg}">${dEsc(text)}</text>`;
 }
+function dSheetGrid(x,y,cols,rows,opts){
+  opts = opts||{};
+  const colW = 58, rowH = 24, headerH = 22, rowLabelW = 26;
+  const colLetters = ["A","B","C","D","E","F"];
+  let out = "";
+  // formula bar
+  out += `<rect x="${x}" y="${y}" width="${rowLabelW+cols*colW}" height="24" fill="${DP.panel}" stroke="${DP.line}"/>
+    <text x="${x+6}" y="${y+16}" font-family="IBM Plex Sans, sans-serif" font-size="10" font-weight="600" fill="${DP.inkSoft}">${dEsc(opts.formulaCell||"A1")}</text>
+    <line x1="${x+34}" y1="${y+4}" x2="${x+34}" y2="${y+20}" stroke="${DP.line}"/>
+    <text x="${x+42}" y="${y+16}" font-family="'IBM Plex Sans', monospace" font-size="10.5" fill="${opts.formula?DP.tealDeep:DP.inkSoft}">${dEsc(opts.formula||"")}</text>`;
+  const gridY = y+24;
+  // column headers
+  out += `<rect x="${x}" y="${gridY}" width="${rowLabelW}" height="${headerH}" fill="${DP.slateTint}"/>`;
+  for(let c=0;c<cols;c++){
+    out += `<rect x="${x+rowLabelW+c*colW}" y="${gridY}" width="${colW}" height="${headerH}" fill="${DP.slateTint}" stroke="${DP.panel}"/>
+      <text x="${x+rowLabelW+c*colW+colW/2}" y="${gridY+15}" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="10" font-weight="600" fill="${DP.inkSoft}">${colLetters[c]}</text>`;
+  }
+  // rows
+  for(let r=0;r<rows;r++){
+    const ry = gridY+headerH+r*rowH;
+    out += `<rect x="${x}" y="${ry}" width="${rowLabelW}" height="${rowH}" fill="${DP.slateTint}" stroke="${DP.panel}"/>
+      <text x="${x+rowLabelW/2}" y="${ry+16}" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="10" fill="${DP.inkSoft}">${r+1}</text>`;
+    for(let c=0;c<cols;c++){
+      const cx = x+rowLabelW+c*colW, cy = ry;
+      const cellKey = colLetters[c]+(r+1);
+      const isHighlight = (opts.highlightCells||[]).includes(cellKey);
+      const value = (opts.values||{})[cellKey];
+      out += `<rect x="${cx}" y="${cy}" width="${colW}" height="${rowH}" fill="${isHighlight?DP.tealTint:'#fff'}" stroke="${isHighlight?DP.teal:DP.line}" stroke-width="${isHighlight?2:1}"/>`;
+      if(value!==undefined) out += `<text x="${cx+colW-8}" y="${cy+16}" text-anchor="end" font-family="IBM Plex Sans, sans-serif" font-size="10.5" fill="${isHighlight?DP.tealDeep:DP.inkSoft}">${dEsc(value)}</text>`;
+    }
+  }
+  return { svg: out, w: rowLabelW+cols*colW, h: 24+headerH+rows*rowH };
+}
+function dSlideFilmstrip(x,y,h,count,activeIdx,dragging){
+  const w = 70, gap = 10;
+  let out = "";
+  for(let i=0;i<count;i++){
+    const sy = y + i*(h+gap);
+    const on = i===activeIdx;
+    const isDragTarget = dragging && i===dragging.toIdx;
+    out += `<rect x="${x}" y="${sy}" width="${w}" height="${h}" rx="4" fill="#fff" stroke="${on?DP.teal:DP.line}" stroke-width="${on?2:1}"/>
+      <text x="${x+8}" y="${sy+h/2+4}" font-family="IBM Plex Sans, sans-serif" font-size="9" fill="${DP.inkSoft}">${i+1}</text>`;
+    if(isDragTarget) out += `<line x1="${x-4}" y1="${sy-gap/2}" x2="${x+w+4}" y2="${sy-gap/2}" stroke="${DP.teal}" stroke-width="2"/>`;
+  }
+  if(dragging){
+    const fromY = y + dragging.fromIdx*(h+gap);
+    const toY = y + (dragging.toIdx-0.5)*(h+gap);
+    out += `<rect x="${x}" y="${fromY}" width="${w}" height="${h}" rx="4" fill="${DP.tealTint}" stroke="${DP.teal}" stroke-width="2" stroke-dasharray="4,3" opacity="0.85"/>
+      <text x="${x+8}" y="${fromY+h/2+4}" font-family="IBM Plex Sans, sans-serif" font-size="9" fill="${DP.tealDeep}">${dragging.fromIdx+1}</text>
+      <line x1="${x+w+14}" y1="${fromY+h/2}" x2="${x+w+14}" y2="${toY}" stroke="${DP.teal}" stroke-width="2" stroke-dasharray="3,3"/>
+      <path d="M${x+w+9},${toY-6} l5,8 l5,-8 z" fill="${DP.teal}"/>`;
+  }
+  return { svg: out, w };
+}
+function dTablePicker(x,y,cols,rows,highlightCols,highlightRows){
+  const cell = 22; let out = "";
+  for(let r=0;r<rows;r++){
+    for(let c=0;c<cols;c++){
+      const on = c<highlightCols && r<highlightRows;
+      out += `<rect x="${x+c*cell}" y="${y+r*cell}" width="${cell-2}" height="${cell-2}" fill="${on?DP.tealTint:'#fff'}" stroke="${on?DP.teal:DP.line}"/>`;
+    }
+  }
+  return { svg: out, w: cols*cell, h: rows*cell };
+}
+function dVersionTimeline(x,y,entries,highlightIdx){
+  const rowH = 34; let out = `<line x1="${x+10}" y1="${y+10}" x2="${x+10}" y2="${y+10+((entries.length-1)*rowH)}" stroke="${DP.line}" stroke-width="2"/>`;
+  entries.forEach((e,i)=>{
+    const ry = y + i*rowH; const on = i===highlightIdx;
+    out += `<circle cx="${x+10}" cy="${ry+10}" r="6" fill="${on?DP.teal:DP.panel}" stroke="${on?DP.tealDeep:DP.line}" stroke-width="2"/>
+      <text x="${x+28}" y="${ry+9}" font-family="IBM Plex Sans, sans-serif" font-size="10" font-weight="${on?600:400}" fill="${on?DP.tealDeep:DP.ink}">${dEsc(e.label)}</text>
+      <text x="${x+28}" y="${ry+22}" font-family="IBM Plex Sans, sans-serif" font-size="9" fill="${DP.inkSoft}">${dEsc(e.sub)}</text>`;
+  });
+  return { svg: out, h: entries.length*rowH };
+}
+function dSearchResults(x,y,w,results,highlightIdx){
+  const rowH = 46; let out = "";
+  results.forEach((r,i)=>{
+    const ry = y + i*rowH; const on = i===highlightIdx;
+    if(on) out += `<rect x="${x-8}" y="${ry-6}" width="${w+16}" height="${rowH-6}" rx="6" fill="${DP.tealTint}"/>`;
+    if(r.ad) out += `<rect x="${x}" y="${ry-2}" width="30" height="14" rx="3" fill="${DP.amberTint}"/><text x="${x+15}" y="${ry+8}" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="8" font-weight="700" fill="${DP.amber}">AD</text>`;
+    out += `<text x="${x+(r.ad?38:0)}" y="${ry+10}" font-family="IBM Plex Sans, sans-serif" font-size="11" fill="#5570c9">${dEsc(r.title)}</text>
+      <text x="${x}" y="${ry+26}" font-family="IBM Plex Sans, sans-serif" font-size="9.5" fill="${DP.inkSoft}">${dEsc(r.snippet)}</text>`;
+  });
+  return { svg: out, h: results.length*rowH };
+}
 function dWrapSvg(inner, w, h){
   return `<svg viewBox="0 0 ${w} ${h}" width="${w}" height="${h}" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;display:block;" role="img" aria-hidden="true">
     <rect width="${w}" height="${h}" fill="${DP.paper}" rx="8"/>${inner}</svg>`;
@@ -677,7 +762,7 @@ const SKILL_DIAGRAMS = {
     const frame = dBrowserFrame(20,20,600,260,"Google Drive");
     const sidebar = dSidebarList(20,50,120,230,["My Drive","Shared with me","Recent"],-1);
     const tb = dToolbarRow(160,60,[{label:"+ New",highlight:false},{label:"Search Drive",highlight:true}]);
-    const grid = dFileGrid(160,110,440,120,2,1,"file");
+    const grid = dFileGrid(160,110,440,8,1,"file");
     const callout = dCalloutBubble(340,220,260,"Click the search bar and type part of the file's name.",{x:230,y:90});
     return dWrapSvg(frame+sidebar+tb+grid+callout.svg, 640, 320);
   },
@@ -745,6 +830,95 @@ const SKILL_DIAGRAMS = {
     const dialog = dDialogBox(160,55,320,140,"Share with people",[{label:"",value:"docs.google.com/document/d/1AbC…"}],"Copy link",0);
     const callout = dCalloutBubble(60,210,540,"Click Share, then Copy link — now you can paste it into your assignment.",{x:400,y:160});
     return dWrapSvg(frame+dialog+callout.svg, 640, 280);
+  },
+  "l2-sheets-cells": ()=>{
+    const frame = dBrowserFrame(20,20,600,270,"Untitled spreadsheet");
+    const grid = dSheetGrid(80,60,4,5,{formulaCell:"C3",highlightCells:["C3"]});
+    const callout = dCalloutBubble(340,250,260,"Column C meets row 3 — that crossing point is cell C3.",{x:80+26+2*58+29,y:60+24+22+2*24+12});
+    return dWrapSvg(frame+grid.svg+callout.svg, 640, 320);
+  },
+  "l2-sheets-formulas": ()=>{
+    const frame = dBrowserFrame(20,20,600,270,"Untitled spreadsheet");
+    const grid = dSheetGrid(60,60,3,4,{formulaCell:"A3",formula:"=A1+A2",highlightCells:["A1","A2","A3"],values:{A1:"4",A2:"7",A3:"11"}});
+    const callout = dCalloutBubble(320,250,270,"Every formula starts with =. This one adds cell A1 and A2 together.",{x:95,y:60+24+22+12});
+    return dWrapSvg(frame+grid.svg+callout.svg, 640, 320);
+  },
+  "l2-sheets-sum": ()=>{
+    const frame = dBrowserFrame(20,20,600,290,"Untitled spreadsheet");
+    const grid = dSheetGrid(60,60,2,6,{formulaCell:"A6",formula:"=SUM(A1:A5)",highlightCells:["A1","A2","A3","A4","A5","A6"],values:{A1:"12",A2:"9",A3:"15",A4:"7",A5:"10",A6:"53"}});
+    const callout = dCalloutBubble(280,270,300,"=SUM(A1:A5) adds up every number from A1 down through A5 in one step.",{x:95,y:60+24+22+2*24+12});
+    return dWrapSvg(frame+grid.svg+callout.svg, 640, 340);
+  },
+  "l2-sheets-average": ()=>{
+    const frame = dBrowserFrame(20,20,600,270,"Untitled spreadsheet");
+    const grid = dSheetGrid(60,60,2,5,{formulaCell:"A5",formula:"=AVERAGE(A1:A4)",highlightCells:["A1","A2","A3","A4","A5"],values:{A1:"18",A2:"22",A3:"14",A4:"18",A5:"18"}});
+    const callout = dCalloutBubble(280,250,300,"=AVERAGE(A1:A4) finds the mean of those four numbers automatically.",{x:95,y:60+24+22+12});
+    return dWrapSvg(frame+grid.svg+callout.svg, 640, 320);
+  },
+  "l2-sheets-minmax": ()=>{
+    const frame = dBrowserFrame(20,20,600,290,"Untitled spreadsheet");
+    const grid = dSheetGrid(60,60,3,6,{formulaCell:"B6",formula:"=MIN(A1:A5)",highlightCells:["A1","A2","A3","A4","A5","B6","C6"],values:{A1:"12",A2:"9",A3:"15",A4:"7",A5:"10",B6:"7",C6:"15"}});
+    const callout = dCalloutBubble(280,270,300,"MIN finds the smallest number in a range; MAX finds the largest.",{x:95,y:60+24+22+2*24+12});
+    return dWrapSvg(frame+grid.svg+callout.svg, 640, 360);
+  },
+  "l2-sheets-chart": ()=>{
+    const frame = dBrowserFrame(20,20,600,270,"Untitled spreadsheet");
+    const grid = dSheetGrid(50,55,2,5,{values:{A1:"Day",B1:"Temp",A2:"Mon",B2:"14",A3:"Tue",B3:"17",A4:"Wed",B4:"13"}});
+    const chartX=290, chartY=70, chartW=280, chartH=170;
+    const bars = [14,17,13,19].map((v,i)=>{
+      const bh = v*6; const bx = chartX+20+i*60;
+      return `<rect x="${bx}" y="${chartY+chartH-bh}" width="36" height="${bh}" rx="3" fill="${DP.teal}"/>`;
+    }).join("");
+    const chart = `<rect x="${chartX}" y="${chartY}" width="${chartW}" height="${chartH}" rx="8" fill="#fff" stroke="${DP.line}"/>
+      <line x1="${chartX+15}" y1="${chartY+10}" x2="${chartX+15}" y2="${chartY+chartH-10}" stroke="${DP.inkSoft}"/>
+      <line x1="${chartX+15}" y1="${chartY+chartH-10}" x2="${chartX+chartW-10}" y2="${chartY+chartH-10}" stroke="${DP.inkSoft}"/>
+      ${bars}`;
+    const callout = dCalloutBubble(60,250,540,"Select your data, then Insert > Chart — Sheets turns it into a picture.",{x:340,y:140});
+    return dWrapSvg(frame+grid.svg+chart+callout.svg, 640, 350);
+  },
+  "l2-slides-manage": ()=>{
+    const frame = dBrowserFrame(20,20,600,300,"Untitled presentation");
+    const film = dSlideFilmstrip(40,58,52,4,1,{fromIdx:3,toIdx:1});
+    const callout = dCalloutBubble(150,270,460,"Right-click a slide for New slide or Delete — or drag it to reorder.",{x:75,y:58+3*62+26});
+    return dWrapSvg(frame+film.svg+callout.svg, 640, 350);
+  },
+  "l2-docs-tables": ()=>{
+    const frame = dBrowserFrame(20,20,600,270,"Untitled document");
+    const tb = dToolbarRow(60,55,[{label:"Insert",highlight:true}]);
+    const picker = dTablePicker(230,90,6,4,3,2);
+    const callout = dCalloutBubble(340,220,260,"Insert > Table, then drag to choose how many rows and columns you want.",{x:230+3*22-11,y:90+2*22-11});
+    return dWrapSvg(frame+tb+picker.svg+callout.svg, 640, 320);
+  },
+  "l3-suggesting": ()=>{
+    const frame = dBrowserFrame(20,20,600,240,"Untitled document");
+    const tb = dToolbarRow(400,55,[{label:"Suggesting",highlight:true}]);
+    const line1 = `<line x1="60" y1="100" x2="420" y2="100" stroke="${DP.line}"/>`;
+    const suggestion = `<rect x="60" y="118" width="230" height="20" rx="3" fill="${DP.tealTint}"/>
+      <text x="66" y="132" font-family="IBM Plex Sans, sans-serif" font-size="11" fill="${DP.tealDeep}" text-decoration="underline">a clearer topic sentence</text>
+      <circle cx="300" cy="128" r="8" fill="${DP.tealTint}" stroke="${DP.teal}"/><text x="300" y="132" text-anchor="middle" font-size="9" fill="${DP.tealDeep}">i</text>`;
+    const line2 = `<line x1="60" y1="150" x2="380" y2="150" stroke="${DP.line}"/>`;
+    const callout = dCalloutBubble(60,190,540,"Suggested text shows underlined in color — the owner clicks to accept or reject it.",null);
+    return dWrapSvg(frame+tb+line1+suggestion+line2+callout.svg, 640, 300);
+  },
+  "l3-version-history": ()=>{
+    const frame = dBrowserFrame(20,20,600,290,"Untitled document — Version history");
+    const menuPath = dToolbarRow(50,55,[{label:"File",highlight:false},{label:"Version history",highlight:true}]);
+    const timeline = dVersionTimeline(70,100,[
+      {label:"Today, 2:14 PM",sub:"Current version — you"},
+      {label:"Today, 10:05 AM",sub:"Edited — you"},
+      {label:"Yesterday, 3:40 PM",sub:"Edited — your teacher"},
+    ],0);
+    const callout = dCalloutBubble(320,230,280,"File > Version history shows every past save — click any one to preview or restore it.",{x:270,y:110});
+    return dWrapSvg(frame+menuPath+timeline.svg+callout.svg, 640, 340);
+  },
+  "l4-ads": ()=>{
+    const frame = dBrowserFrame(20,20,600,260,"Google Search");
+    const results = dSearchResults(60,70,480,[
+      {title:"BuyGreatShoes.com — Shop Now",snippet:"Free shipping on orders over $50. Huge sale this week only.",ad:true},
+      {title:"Running Shoes: A Buyer's Guide",snippet:"consumerreports.org — independent reviews and comparisons",ad:false},
+    ],0);
+    const callout = dCalloutBubble(60,220,540,"A small \"Ad\" or \"Sponsored\" label means someone paid to be shown first.",null);
+    return dWrapSvg(frame+results.svg+callout.svg, 640, 320);
   },
 };
 function renderSkillDiagram(skillId){
