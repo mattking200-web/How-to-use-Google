@@ -537,6 +537,7 @@ const DP = {
   ink:'var(--ink)', inkSoft:'var(--ink-soft)', paper:'var(--paper)', panel:'var(--panel)',
   line:'var(--line)', teal:'var(--teal)', tealDeep:'var(--teal-deep)', tealTint:'var(--teal-tint)',
   amber:'var(--amber)', amberTint:'var(--amber-tint)', slateTint:'var(--slate-tint)',
+  coral:'var(--coral)',
 };
 function dEsc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 function dWrap(text, maxChars){
@@ -723,6 +724,151 @@ function dVersionTimeline(x,y,entries,highlightIdx){
   });
   return { svg: out, h: entries.length*rowH };
 }
+function dSelectionBox(x,y,w,h,label){
+  const hs = 4; // handle size
+  const corners = [[x,y],[x+w,y],[x,y+h],[x+w,y+h],[x+w/2,y],[x+w/2,y+h],[x,y+h/2],[x+w,y+h/2]];
+  let out = `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${DP.slateTint}" stroke="${DP.teal}" stroke-width="2"/>`;
+  if(label) out += `<text x="${x+w/2}" y="${y+h/2+4}" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="10" fill="${DP.inkSoft}">${dEsc(label)}</text>`;
+  corners.forEach(([cx,cy])=>{
+    out += `<rect x="${cx-hs}" y="${cy-hs}" width="${hs*2}" height="${hs*2}" fill="#fff" stroke="${DP.teal}" stroke-width="1.5"/>`;
+  });
+  return out;
+}
+function dCommentThread(x,y,w,entries){
+  let out = "", cy = y;
+  entries.forEach((e,i)=>{
+    const lines = dWrap(e.text, 30);
+    const h = 26 + lines.length*13;
+    out += `<rect x="${x}" y="${cy}" width="${w}" height="${h}" rx="6" fill="${DP.panel}" stroke="${i>0?DP.line:DP.teal}" stroke-width="${i>0?1:1.5}"/>
+      <circle cx="${x+14}" cy="${cy+15}" r="8" fill="${i>0?DP.amberTint:DP.tealTint}"/>
+      <text x="${x+14}" y="${cy+19}" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="8" font-weight="700" fill="${i>0?DP.amber:DP.tealDeep}">${dEsc(e.initial)}</text>
+      <text x="${x+28}" y="${cy+18}" font-family="IBM Plex Sans, sans-serif" font-size="9.5" font-weight="600" fill="${DP.ink}">${dEsc(e.name)}</text>`;
+    lines.forEach((ln,li)=>{
+      out += `<text x="${x+10}" y="${cy+34+li*13}" font-family="IBM Plex Sans, sans-serif" font-size="9.5" fill="${DP.inkSoft}">${dEsc(ln)}</text>`;
+    });
+    cy += h + 6;
+    if(i===0 && entries.length>1){
+      out += `<text x="${x+16}" y="${cy+9}" font-family="IBM Plex Sans, sans-serif" font-size="9" fill="${DP.inkSoft}">reply</text>`;
+      cy += 16;
+    }
+  });
+  return { svg: out, h: cy - y };
+}
+function dWebPage(x,y,w,h,opts){
+  opts = opts||{};
+  let out = `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="6" fill="#fff" stroke="${DP.line}"/>`;
+  // headline
+  out += `<rect x="${x+16}" y="${y+16}" width="${w*0.62}" height="12" rx="2" fill="${DP.ink}"/>`;
+  let cy = y+42;
+  if(opts.byline){
+    const on = opts.highlight==="byline";
+    if(on) out += `<rect x="${x+12}" y="${cy-12}" width="${w*0.66}" height="20" rx="4" fill="${DP.tealTint}"/>`;
+    out += `<text x="${x+16}" y="${cy+2}" font-family="IBM Plex Sans, sans-serif" font-size="9.5" font-weight="${on?600:400}" fill="${on?DP.tealDeep:DP.inkSoft}">${dEsc(opts.byline)}</text>`;
+    cy += 20;
+  }
+  if(opts.date){
+    const on = opts.highlight==="date";
+    if(on) out += `<rect x="${x+12}" y="${cy-12}" width="${w*0.5}" height="20" rx="4" fill="${DP.tealTint}"/>`;
+    out += `<text x="${x+16}" y="${cy+2}" font-family="IBM Plex Sans, sans-serif" font-size="9.5" font-weight="${on?600:400}" fill="${on?DP.tealDeep:DP.inkSoft}">${dEsc(opts.date)}</text>`;
+    cy += 20;
+  }
+  for(let i=0;i<(opts.bodyLines||4);i++){
+    out += `<line x1="${x+16}" y1="${cy+i*13}" x2="${x+w-(i===((opts.bodyLines||4)-1)?70:20)}" y2="${cy+i*13}" stroke="${DP.line}" stroke-width="1.5"/>`;
+  }
+  if(opts.aboutLink){
+    const on = opts.highlight==="about";
+    out += `<rect x="${x+16}" y="${y+h-28}" width="70" height="18" rx="4" fill="${on?DP.tealTint:DP.slateTint}" stroke="${on?DP.teal:'none'}"/>
+      <text x="${x+51}" y="${y+h-15}" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="9" fill="${on?DP.tealDeep:DP.inkSoft}">About us</text>`;
+  }
+  return out;
+}
+function dCollabCursors(x,y,people){
+  let out = "";
+  people.forEach(p=>{
+    out += `<line x1="${p.x}" y1="${p.y}" x2="${p.x}" y2="${p.y+16}" stroke="${p.color}" stroke-width="2"/>
+      <rect x="${p.x}" y="${p.y-13}" width="${10+p.name.length*5.5}" height="13" rx="3" fill="${p.color}"/>
+      <text x="${p.x+5}" y="${p.y-3}" font-family="IBM Plex Sans, sans-serif" font-size="8" font-weight="600" fill="#fff">${dEsc(p.name)}</text>`;
+  });
+  return out;
+}
+function dSlideCanvas(x,y,w,h,opts){
+  opts = opts||{};
+  let out = `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="4" fill="${opts.bg||'#fff'}" stroke="${DP.line}"/>`;
+  if(opts.titleBar) out += `<rect x="${x+16}" y="${y+14}" width="${w*0.6}" height="11" rx="2" fill="${opts.accent||DP.ink}"/>`;
+  if(opts.bodyLines){
+    for(let i=0;i<opts.bodyLines;i++){
+      out += `<line x1="${x+16}" y1="${y+44+i*12}" x2="${x+w-30-(i%2)*24}" y2="${y+44+i*12}" stroke="${DP.line}" stroke-width="1.5"/>`;
+    }
+  }
+  return out;
+}
+function dThemeSwatches(x,y,themes,activeIdx){
+  const sw = 54, sh = 40, gap = 10;
+  let out = "";
+  themes.forEach((t,i)=>{
+    const sx = x + i*(sw+gap); const on = i===activeIdx;
+    out += `<rect x="${sx}" y="${y}" width="${sw}" height="${sh}" rx="4" fill="${t.bg}" stroke="${on?DP.teal:DP.line}" stroke-width="${on?2.5:1}"/>
+      <rect x="${sx+7}" y="${y+9}" width="${sw-24}" height="6" rx="2" fill="${t.accent}"/>
+      <line x1="${sx+7}" y1="${y+23}" x2="${sx+sw-10}" y2="${y+23}" stroke="${t.accent}" stroke-width="1.5" opacity="0.5"/>
+      <line x1="${sx+7}" y1="${y+30}" x2="${sx+sw-18}" y2="${y+30}" stroke="${t.accent}" stroke-width="1.5" opacity="0.5"/>`;
+  });
+  return out;
+}
+function dComparePanels(x,y,w,h,left,right){
+  const gap = 20, pw = (w-gap)/2;
+  const panel = (px,d)=>{
+    const tone = d.good ? {bg:DP.tealTint,br:DP.teal,fg:DP.tealDeep} : {bg:'#f8e5df',br:DP.coral,fg:DP.coral};
+    let o = `<rect x="${px}" y="${y}" width="${pw}" height="${h}" rx="8" fill="${tone.bg}" stroke="${tone.br}" stroke-width="1.5"/>
+      <text x="${px+12}" y="${y+20}" font-family="IBM Plex Sans, sans-serif" font-size="10" font-weight="700" fill="${tone.fg}">${dEsc(d.label)}</text>`;
+    dWrap(d.text, Math.floor(pw/5.6)).forEach((ln,i)=>{
+      o += `<text x="${px+12}" y="${y+40+i*14}" font-family="IBM Plex Sans, sans-serif" font-size="9.5" fill="${DP.ink}">${dEsc(ln)}</text>`;
+    });
+    return o;
+  };
+  return panel(x,left) + panel(x+pw+gap,right);
+}
+function dTextToolbar(x,y,buttons){
+  let cx = x, out = "";
+  buttons.forEach(b=>{
+    const w = b.wide ? 62 : 26;
+    out += `<rect x="${cx}" y="${y}" width="${w}" height="24" rx="4" fill="${b.on?DP.teal:DP.panel}" stroke="${b.on?DP.tealDeep:DP.line}"/>
+      <text x="${cx+w/2}" y="${y+16}" text-anchor="middle" font-family="${b.serif?'Georgia, serif':'IBM Plex Sans, sans-serif'}" font-size="${b.size||11}" font-weight="${b.bold?700:600}" font-style="${b.italic?'italic':'normal'}" text-decoration="${b.underline?'underline':'none'}" fill="${b.on?'#fff':DP.inkSoft}">${dEsc(b.label)}</text>`;
+    cx += w + 6;
+  });
+  return { svg: out, endX: cx };
+}
+function dDocBody(x,y,w,items){
+  let out = "", cy = y;
+  items.forEach(it=>{
+    if(it.type==="h1"){
+      // highlight first so the text draws on top of it, not under
+      if(it.on) out += `<rect x="${x-6}" y="${cy-2}" width="${it.text.length*8.4+14}" height="22" rx="4" fill="${DP.tealTint}"/>`;
+      out += `<text x="${x}" y="${cy+14}" font-family="IBM Plex Sans, sans-serif" font-size="15" font-weight="700" fill="${it.on?DP.tealDeep:DP.ink}">${dEsc(it.text)}</text>`;
+      cy += 30;
+    } else if(it.type==="h2"){
+      out += `<text x="${x}" y="${cy+12}" font-family="IBM Plex Sans, sans-serif" font-size="12" font-weight="600" fill="${it.on?DP.tealDeep:DP.ink}">${dEsc(it.text)}</text>`;
+      cy += 24;
+    } else if(it.type==="bullet"){
+      out += `<circle cx="${x+5}" cy="${cy+7}" r="2.5" fill="${DP.inkSoft}"/><text x="${x+16}" y="${cy+11}" font-family="IBM Plex Sans, sans-serif" font-size="10.5" fill="${DP.inkSoft}">${dEsc(it.text)}</text>`;
+      cy += 19;
+    } else if(it.type==="num"){
+      out += `<text x="${x}" y="${cy+11}" font-family="IBM Plex Sans, sans-serif" font-size="10.5" fill="${DP.inkSoft}">${it.n}.</text><text x="${x+16}" y="${cy+11}" font-family="IBM Plex Sans, sans-serif" font-size="10.5" fill="${DP.inkSoft}">${dEsc(it.text)}</text>`;
+      cy += 19;
+    } else if(it.type==="text"){
+      out += `<text x="${x}" y="${cy+11}" font-family="IBM Plex Sans, sans-serif" font-size="10.5" font-weight="${it.bold?700:400}" font-style="${it.italic?'italic':'normal'}" text-decoration="${it.underline?'underline':'none'}" fill="${DP.ink}">${dEsc(it.text)}</text>`;
+      cy += 19;
+    } else if(it.type==="line"){
+      out += `<line x1="${x}" y1="${cy+8}" x2="${x+(it.w||w)}" y2="${cy+8}" stroke="${DP.line}" stroke-width="1.5"/>`;
+      cy += 18;
+    } else if(it.type==="selected"){
+      out += `<rect x="${x}" y="${cy}" width="${it.text.length*6.2+10}" height="18" rx="2" fill="#b9d9f5"/>
+        <text x="${x+5}" y="${cy+13}" font-family="IBM Plex Sans, sans-serif" font-size="10.5" fill="${DP.ink}">${dEsc(it.text)}</text>`;
+      cy += 22;
+    }
+  });
+  return { svg: out, h: cy - y };
+}
+function dComparePanelsEnd(){ return ""; }
 function dSearchResults(x,y,w,results,highlightIdx){
   const rowH = 46; let out = "";
   results.forEach((r,i)=>{
@@ -920,6 +1066,535 @@ const SKILL_DIAGRAMS = {
     const callout = dCalloutBubble(60,220,540,"A small \"Ad\" or \"Sponsored\" label means someone paid to be shown first.",null);
     return dWrapSvg(frame+results.svg+callout.svg, 640, 320);
   },
+
+  /* ---- Tier 2 ---- */
+  "l2-docs-images-resize": ()=>{
+    const frame = dBrowserFrame(20,20,600,250,"Untitled document");
+    const sel = dSelectionBox(90,75,150,110,"image");
+    const smaller = `<rect x="300" y="105" width="90" height="66" fill="${DP.slateTint}" stroke="${DP.line}"/>
+      <text x="345" y="142" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="9" fill="${DP.inkSoft}">image</text>
+      <path d="M250,150 L292,130" stroke="${DP.teal}" stroke-width="2" stroke-dasharray="4,3"/><path d="M296,128 l-9,1 l4,5 z" fill="${DP.teal}"/>`;
+    const callout = dCalloutBubble(60,215,540,"Click the image, then drag a corner handle inward to make it smaller.",{x:240,y:185});
+    return dWrapSvg(frame+sel+smaller+callout.svg, 640, 300);
+  },
+  "l2-docs-links": ()=>{
+    const frame = dBrowserFrame(20,20,600,250,"Untitled document");
+    const line = `<line x1="60" y1="90" x2="300" y2="90" stroke="${DP.line}"/>
+      <rect x="60" y="105" width="118" height="17" rx="3" fill="${DP.tealTint}"/>
+      <text x="66" y="118" font-family="IBM Plex Sans, sans-serif" font-size="11" fill="${DP.tealDeep}" text-decoration="underline">renewable energy</text>
+      <line x1="60" y1="140" x2="340" y2="140" stroke="${DP.line}"/>`;
+    const dialog = dDialogBox(250,95,290,90,"Insert link",[{label:"",value:"https://example.org/energy"}],"Apply",0);
+    const callout = dCalloutBubble(60,215,540,"Select a word, press Ctrl+K, paste the web address, then click Apply.",{x:395,y:185});
+    return dWrapSvg(frame+line+dialog+callout.svg, 640, 300);
+  },
+  "l2-docs-spellcheck": ()=>{
+    const frame = dBrowserFrame(20,20,600,250,"Untitled document");
+    const text = `<text x="60" y="95" font-family="IBM Plex Sans, sans-serif" font-size="12" fill="${DP.ink}">The enviroment needs our help.</text>
+      <path d="M97,100 q3,4 6,0 q3,-4 6,0 q3,4 6,0 q3,-4 6,0 q3,4 6,0" stroke="${DP.coral}" stroke-width="1.5" fill="none"/>`;
+    const menu = dDropdownMenu(150,110,["environment","enviable"],0);
+    const callout = dCalloutBubble(340,205,260,"A red squiggle means a possible spelling mistake — right-click it to fix.",{x:230,y:127});
+    return dWrapSvg(frame+text+menu.svg+callout.svg, 640, 300);
+  },
+  "l2-docs-comments": ()=>{
+    const frame = dBrowserFrame(20,20,600,270,"Untitled document");
+    const line = `<line x1="55" y1="90" x2="300" y2="90" stroke="${DP.line}"/>
+      <rect x="55" y="103" width="150" height="17" rx="3" fill="${DP.amberTint}"/>
+      <line x1="55" y1="138" x2="280" y2="138" stroke="${DP.line}"/>`;
+    const thread = dCommentThread(330,75,250,[
+      {initial:"K",name:"Mr. King",text:"Can you add an example here?"},
+      {initial:"J",name:"Jordan",text:"Added one — thanks!"},
+    ]);
+    const callout = dCalloutBubble(55,215,540,"Select text, click the comment icon, then use Reply to answer someone.",null);
+    return dWrapSvg(frame+line+thread.svg+callout.svg, 640, 310);
+  },
+  "l2-slides-layouts": ()=>{
+    const frame = dBrowserFrame(20,20,600,270,"Untitled presentation");
+    const tb = dToolbarRow(50,55,[{label:"Layout",highlight:true}]);
+    const a = dSlideCanvas(60,100,150,95,{titleBar:true});
+    const b = dSlideCanvas(230,100,150,95,{titleBar:true,bodyLines:3});
+    const c = dSlideCanvas(400,100,150,95,{bodyLines:4});
+    const sel = `<rect x="228" y="98" width="154" height="99" rx="4" fill="none" stroke="${DP.teal}" stroke-width="2.5"/>`;
+    const labels = `<text x="135" y="212" text-anchor="middle" font-size="9" font-family="IBM Plex Sans, sans-serif" fill="${DP.inkSoft}">Title only</text>
+      <text x="305" y="212" text-anchor="middle" font-size="9" font-family="IBM Plex Sans, sans-serif" font-weight="600" fill="${DP.tealDeep}">Title and body</text>
+      <text x="475" y="212" text-anchor="middle" font-size="9" font-family="IBM Plex Sans, sans-serif" fill="${DP.inkSoft}">Body only</text>`;
+    const callout = dCalloutBubble(60,235,540,"Insert > Layout gives you ready-made slide templates to pick from.",null);
+    return dWrapSvg(frame+tb+a+b+c+sel+labels+callout.svg, 640, 320);
+  },
+  "l2-slides-resize-move": ()=>{
+    const frame = dBrowserFrame(20,20,600,250,"Untitled presentation");
+    const canvas = dSlideCanvas(60,70,520,140,{});
+    const sel = dSelectionBox(110,100,140,80,"text box");
+    const arrow = `<path d="M265,140 L380,140" stroke="${DP.teal}" stroke-width="2" stroke-dasharray="4,3"/><path d="M386,140 l-9,-4 l0,8 z" fill="${DP.teal}"/>
+      <rect x="390" y="110" width="140" height="60" fill="none" stroke="${DP.teal}" stroke-width="1.5" stroke-dasharray="4,3"/>`;
+    const callout = dCalloutBubble(60,225,540,"Drag the middle to move it; drag a corner handle to resize it.",null);
+    return dWrapSvg(frame+canvas+sel+arrow+callout.svg, 640, 305);
+  },
+  "l2-slides-shapes": ()=>{
+    const frame = dBrowserFrame(20,20,600,260,"Untitled presentation");
+    const tb = dToolbarRow(50,55,[{label:"Insert",highlight:false},{label:"Shape",highlight:true}]);
+    const shapes = `<rect x="150" y="105" width="44" height="44" rx="4" fill="${DP.tealTint}" stroke="${DP.teal}"/>
+      <circle cx="238" cy="127" r="22" fill="${DP.slateTint}" stroke="${DP.line}"/>
+      <path d="M290,149 l22,-44 l22,44 z" fill="${DP.slateTint}" stroke="${DP.line}"/>
+      <path d="M360,127 l22,-18 v10 h26 v16 h-26 v10 z" fill="${DP.slateTint}" stroke="${DP.line}"/>`;
+    const callout = dCalloutBubble(340,195,250,"Insert > Shape, pick one, then drag on the slide to draw it.",{x:172,y:151});
+    return dWrapSvg(frame+tb+shapes+callout.svg, 640, 300);
+  },
+  "l2-slides-consistent": ()=>{
+    const frame = dBrowserFrame(20,20,600,260,"Untitled presentation");
+    const label = `<text x="55" y="70" font-family="IBM Plex Sans, sans-serif" font-size="10" font-weight="600" fill="${DP.inkSoft}">Theme</text>`;
+    const swatches = dThemeSwatches(55,80,[
+      {bg:"#ffffff",accent:"#0e7c6b"},
+      {bg:"#122031",accent:"#c97a1a"},
+      {bg:"#f5f6f4",accent:"#3d4f63"},
+    ],0);
+    const applied = `<text x="300" y="70" font-family="IBM Plex Sans, sans-serif" font-size="10" font-weight="600" fill="${DP.inkSoft}">Every slide matches</text>`;
+    const s1 = dSlideCanvas(300,80,85,52,{titleBar:true,accent:DP.teal});
+    const s2 = dSlideCanvas(395,80,85,52,{titleBar:true,accent:DP.teal,bodyLines:2});
+    const s3 = dSlideCanvas(490,80,85,52,{titleBar:true,accent:DP.teal,bodyLines:2});
+    const callout = dCalloutBubble(55,165,540,"Pick one theme under Slide > Theme — it styles every slide the same way.",null);
+    return dWrapSvg(frame+label+swatches+applied+s1+s2+s3+callout.svg, 640, 300);
+  },
+  "l2-slides-notes": ()=>{
+    const frame = dBrowserFrame(20,20,600,270,"Untitled presentation");
+    const canvas = dSlideCanvas(120,60,400,110,{titleBar:true,bodyLines:3});
+    const notesBox = `<rect x="120" y="180" width="400" height="56" rx="4" fill="${DP.tealTint}" stroke="${DP.teal}" stroke-width="1.5"/>
+      <text x="130" y="197" font-family="IBM Plex Sans, sans-serif" font-size="9" font-weight="600" fill="${DP.tealDeep}">Speaker notes</text>
+      <text x="130" y="213" font-family="IBM Plex Sans, sans-serif" font-size="9.5" fill="${DP.inkSoft}">Remember to explain the graph before</text>
+      <text x="130" y="227" font-family="IBM Plex Sans, sans-serif" font-size="9.5" fill="${DP.inkSoft}">moving to the next slide.</text>`;
+    const callout = dCalloutBubble(60,250,540,"View > Show speaker notes. Only you see these while presenting.",null);
+    return dWrapSvg(frame+canvas+notesBox+callout.svg, 640, 330);
+  },
+  "l2-sheets-format": ()=>{
+    const frame = dBrowserFrame(20,20,600,250,"Untitled spreadsheet");
+    const tb = dToolbarRow(50,52,[{label:"B",highlight:true},{label:"Fill",highlight:true}]);
+    const grid = dSheetGrid(50,85,3,4,{values:{A1:"Day",B1:"Temp",C1:"Rain",A2:"Mon",B2:"14",C2:"2",A3:"Tue",B3:"17",C3:"0"},highlightCells:["A1","B1","C1"]});
+    const callout = dCalloutBubble(330,215,270,"Select the header row, then bold it and add a fill colour.",{x:120,y:132});
+    return dWrapSvg(frame+tb+grid.svg+callout.svg, 640, 300);
+  },
+  "l2-sheets-resize": ()=>{
+    const frame = dBrowserFrame(20,20,600,240,"Untitled spreadsheet");
+    const grid = dSheetGrid(50,60,3,4,{values:{A1:"Temperat…",B1:"Rain",A2:"14",B2:"2"}});
+    const dragLine = `<line x1="${50+26+58}" y1="82" x2="${50+26+58}" y2="180" stroke="${DP.teal}" stroke-width="2.5"/>
+      <path d="M${50+26+58-10},130 l-8,-5 l0,10 z" fill="${DP.teal}"/><path d="M${50+26+58+10},130 l8,-5 l0,10 z" fill="${DP.teal}"/>`;
+    const callout = dCalloutBubble(330,190,270,"Drag the line between two column letters to make a column wider.",{x:134,y:86});
+    return dWrapSvg(frame+grid.svg+dragLine+callout.svg, 640, 280);
+  },
+  "l2-sheets-sort": ()=>{
+    const frame = dBrowserFrame(20,20,600,260,"Untitled spreadsheet");
+    const tb = dToolbarRow(50,52,[{label:"Data",highlight:false},{label:"Sort range",highlight:true}]);
+    const before = dSheetGrid(50,88,2,4,{values:{A1:"Name",B1:"Score",A2:"Sam",B2:"78",A3:"Ali",B3:"95",A4:"Jo",B4:"84"}});
+    const after = dSheetGrid(360,88,2,4,{values:{A1:"Name",B1:"Score",A2:"Ali",B2:"95",A3:"Jo",B3:"84",A4:"Sam",B4:"78"},highlightCells:["B2","B3","B4"]});
+    const arrow = `<path d="M300,175 L345,175" stroke="${DP.teal}" stroke-width="2"/><path d="M352,175 l-9,-4 l0,8 z" fill="${DP.teal}"/>`;
+    const callout = dCalloutBubble(60,245,540,"Data > Sort range reorders rows by the column you pick.",null);
+    return dWrapSvg(frame+tb+before.svg+after.svg+arrow+callout.svg, 640, 320);
+  },
+  "l3-share-correctly": ()=>{
+    const frame = dBrowserFrame(20,20,600,270,"Untitled document");
+    const dialog = dDialogBox(120,60,300,150,"Share with people",[{label:"Add people",value:"teacher@yourschool.ca"}],null,0);
+    const roleRow = `<rect x="138" y="160" width="120" height="24" rx="5" fill="${DP.tealTint}" stroke="${DP.teal}" stroke-width="1.5"/>
+      <text x="198" y="176" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="10" font-weight="600" fill="${DP.tealDeep}">Viewer ▾</text>`;
+    const warn = `<rect x="440" y="95" width="160" height="72" rx="6" fill="${DP.amberTint}" stroke="#eccb92"/>
+      <text x="452" y="115" font-family="IBM Plex Sans, sans-serif" font-size="9.5" font-weight="600" fill="${DP.amber}">Check before sending:</text>
+      <text x="452" y="132" font-family="IBM Plex Sans, sans-serif" font-size="9" fill="${DP.amber}">• right person?</text>
+      <text x="452" y="147" font-family="IBM Plex Sans, sans-serif" font-size="9" fill="${DP.amber}">• right permission?</text>
+      <text x="452" y="161" font-family="IBM Plex Sans, sans-serif" font-size="9" fill="${DP.amber}">• not public?</text>`;
+    const callout = dCalloutBubble(60,230,540,"Type the exact email and set the role before you click Send.",null);
+    return dWrapSvg(frame+dialog+roleRow+warn+callout.svg, 640, 310);
+  },
+  "l3-work-shared": ()=>{
+    const frame = dBrowserFrame(20,20,600,250,"Google Drive");
+    const sidebar = dSidebarList(20,50,140,200,["My Drive","Shared with me","Recent"],1);
+    const grid = dFileGrid(180,90,420,3,0,"file");
+    const callout = dCalloutBubble(330,205,270,"Files other people share with you live under \"Shared with me\".",{x:95,y:95});
+    return dWrapSvg(frame+sidebar+grid+callout.svg, 640, 290);
+  },
+  "l3-classmates": ()=>{
+    const frame = dBrowserFrame(20,20,600,250,"Untitled document");
+    const avatars = `<circle cx="520" cy="42" r="10" fill="#0e7c6b"/><text x="520" y="46" text-anchor="middle" font-size="9" font-weight="700" fill="#fff">J</text>
+      <circle cx="544" cy="42" r="10" fill="#c97a1a"/><text x="544" y="46" text-anchor="middle" font-size="9" font-weight="700" fill="#fff">A</text>`;
+    const lines = `<line x1="60" y1="100" x2="420" y2="100" stroke="${DP.line}"/>
+      <line x1="60" y1="130" x2="380" y2="130" stroke="${DP.line}"/>
+      <line x1="60" y1="160" x2="440" y2="160" stroke="${DP.line}"/>`;
+    const cursors = dCollabCursors(0,0,[
+      {x:200,y:92,name:"Jordan",color:"#0e7c6b"},
+      {x:330,y:152,name:"Ali",color:"#c97a1a"},
+    ]);
+    const callout = dCalloutBubble(60,205,540,"Each person gets a coloured cursor with their name — work in different spots.",null);
+    return dWrapSvg(frame+avatars+lines+cursors+callout.svg, 640, 290);
+  },
+  "l3-version-recover": ()=>{
+    const frame = dBrowserFrame(20,20,600,270,"Untitled document — Version history");
+    const timeline = dVersionTimeline(60,70,[
+      {label:"Today, 2:14 PM",sub:"Current version"},
+      {label:"Today, 10:05 AM",sub:"Before my changes"},
+      {label:"Yesterday, 3:40 PM",sub:"Earlier draft"},
+    ],1);
+    const restoreBtn = `<rect x="330" y="98" width="150" height="28" rx="14" fill="${DP.teal}"/>
+      <text x="405" y="116" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="10.5" font-weight="600" fill="#fff">Restore this version</text>`;
+    const callout = dCalloutBubble(330,160,270,"Click an older version to preview it, then Restore to bring it back.",{x:405,y:130});
+    return dWrapSvg(frame+timeline.svg+restoreBtn+callout.svg, 640, 310);
+  },
+  "l4-evaluate": ()=>{
+    const frame = dBrowserFrame(20,20,600,270,"example.org/article");
+    const page = dWebPage(50,60,540,170,{byline:"By Dr. A. Chen, Environmental Scientist",date:"Updated March 2026",bodyLines:3,aboutLink:true,highlight:"about"});
+    const callout = dCalloutBubble(60,250,540,"Ask: who made this, when, and are they informing or selling?",null);
+    return dWrapSvg(frame+page+callout.svg, 640, 320);
+  },
+  "l4-creator": ()=>{
+    const frame = dBrowserFrame(20,20,600,260,"example.org/article");
+    const page = dWebPage(50,60,540,170,{byline:"By Dr. A. Chen, Environmental Scientist",date:"Updated March 2026",bodyLines:3,aboutLink:true,highlight:"byline"});
+    const callout = dCalloutBubble(60,245,540,"Look for an author line or an About page to see who wrote it.",null);
+    return dWrapSvg(frame+page+callout.svg, 640, 330);
+  },
+  "l4-dates": ()=>{
+    const frame = dBrowserFrame(20,20,600,260,"example.org/article");
+    const page = dWebPage(50,60,540,170,{byline:"By Dr. A. Chen, Environmental Scientist",date:"Updated March 2026",bodyLines:3,aboutLink:true,highlight:"date"});
+    const callout = dCalloutBubble(60,245,540,"Check the date — old science may be out of date.",null);
+    return dWrapSvg(frame+page+callout.svg, 640, 330);
+  },
+
+  /* ---- Tier 3 ---- */
+  "l2-docs-create": ()=>{
+    const frame = dBrowserFrame(20,20,600,240,"Google Drive");
+    const tb = dToolbarRow(60,58,[{label:"+ New",highlight:true}]);
+    const menu = dDropdownMenu(60,94,["Folder","Google Docs","Google Slides","Google Sheets"],1);
+    const callout = dCalloutBubble(330,150,270,"+ New > Google Docs opens a blank document right away.",{x:210,y:135});
+    return dWrapSvg(frame+tb+menu.svg+callout.svg, 640, 290);
+  },
+  "l2-docs-type": ()=>{
+    const frame = dBrowserFrame(20,20,600,230,"Untitled document");
+    const body = dDocBody(60,75,480,[
+      {type:"text",text:"Polar bears live in the Artic."},
+      {type:"line",w:420},{type:"line",w:360},
+    ]);
+    const caret = `<line x1="228" y1="72" x2="228" y2="90" stroke="${DP.teal}" stroke-width="2"/>`;
+    const callout = dCalloutBubble(60,190,540,"Click where you want to change something, then type or press Backspace.",{x:228,y:92});
+    return dWrapSvg(frame+body.svg+caret+callout.svg, 640, 280);
+  },
+  "l2-docs-select-format": ()=>{
+    const frame = dBrowserFrame(20,20,600,230,"Untitled document");
+    const body = dDocBody(60,80,480,[
+      {type:"selected",text:"Highlight the words you want to change"},
+      {type:"line",w:400},
+    ]);
+    const callout = dCalloutBubble(60,175,540,"Click and drag across text first — selected text turns blue.",{x:180,y:98});
+    return dWrapSvg(frame+body.svg+callout.svg, 640, 265);
+  },
+  "l2-docs-bold-italic": ()=>{
+    const frame = dBrowserFrame(20,20,600,240,"Untitled document");
+    const tb = dTextToolbar(60,55,[{label:"B",bold:true,on:true},{label:"I",italic:true,serif:true},{label:"U",underline:true}]);
+    const body = dDocBody(60,100,480,[
+      {type:"text",text:"Polar bears are endangered.",bold:true},
+      {type:"text",text:"They hunt seals on sea ice.",italic:true},
+      {type:"text",text:"Read more in chapter two.",underline:true},
+    ]);
+    const callout = dCalloutBubble(60,185,540,"Select text, then click B, I or U — or use Ctrl+B / Ctrl+I / Ctrl+U.",{x:73,y:81});
+    return dWrapSvg(frame+tb.svg+body.svg+callout.svg, 640, 275);
+  },
+  "l2-docs-font": ()=>{
+    const frame = dBrowserFrame(20,20,600,240,"Untitled document");
+    const fontBox = `<rect x="60" y="55" width="110" height="24" rx="4" fill="${DP.tealTint}" stroke="${DP.teal}" stroke-width="1.5"/>
+      <text x="70" y="71" font-family="IBM Plex Sans, sans-serif" font-size="10.5" fill="${DP.tealDeep}">Arial ▾</text>
+      <rect x="178" y="55" width="52" height="24" rx="4" fill="${DP.tealTint}" stroke="${DP.teal}" stroke-width="1.5"/>
+      <text x="188" y="71" font-family="IBM Plex Sans, sans-serif" font-size="10.5" fill="${DP.tealDeep}">18 ▾</text>`;
+    const body = `<text x="60" y="120" font-family="IBM Plex Sans, sans-serif" font-size="17" font-weight="700" fill="${DP.ink}">My Animal Report</text>
+      <text x="60" y="148" font-family="IBM Plex Sans, sans-serif" font-size="10.5" fill="${DP.inkSoft}">Body text stays smaller so the title stands out.</text>`;
+    const callout = dCalloutBubble(60,180,540,"Make your title bigger than the body text so it stands out.",{x:115,y:81});
+    return dWrapSvg(frame+fontBox+body+callout.svg, 640, 275);
+  },
+  "l2-docs-headings": ()=>{
+    const frame = dBrowserFrame(20,20,600,260,"Untitled document");
+    const dd = dDropdownMenu(60,52,["Normal text","Heading 1","Heading 2"],1);
+    const body = dDocBody(300,70,280,[
+      {type:"h1",text:"Polar Bears",on:true},
+      {type:"h2",text:"Where they live"},
+      {type:"line",w:250},{type:"line",w:220},
+      {type:"h2",text:"What they eat"},
+      {type:"line",w:250},
+    ]);
+    const callout = dCalloutBubble(60,190,540,"Headings split a long document into sections a reader can scan.",null);
+    return dWrapSvg(frame+dd.svg+body.svg+callout.svg, 640, 290);
+  },
+  "l2-docs-lists": ()=>{
+    const frame = dBrowserFrame(20,20,600,250,"Untitled document");
+    const tb = dToolbarRow(60,52,[{label:"• List",highlight:true},{label:"1. List",highlight:false}]);
+    const bullets = dDocBody(60,95,220,[
+      {type:"bullet",text:"Seals"},{type:"bullet",text:"Fish"},{type:"bullet",text:"Birds"},
+    ]);
+    const nums = dDocBody(330,95,220,[
+      {type:"num",n:1,text:"Find a source"},{type:"num",n:2,text:"Take notes"},{type:"num",n:3,text:"Write it up"},
+    ]);
+    const labels = `<text x="60" y="88" font-size="9" font-weight="600" font-family="IBM Plex Sans, sans-serif" fill="${DP.inkSoft}">Bulleted — any order</text>
+      <text x="330" y="88" font-size="9" font-weight="600" font-family="IBM Plex Sans, sans-serif" fill="${DP.inkSoft}">Numbered — in order</text>`;
+    const callout = dCalloutBubble(60,175,540,"Use bullets for a plain list, numbers when the order matters.",null);
+    return dWrapSvg(frame+tb+labels+bullets.svg+nums.svg+callout.svg, 640, 285);
+  },
+  "l2-docs-copy-cut-paste": ()=>{
+    const frame = dBrowserFrame(20,20,600,250,"Untitled document");
+    const keys = [["Ctrl+C","copy"],["Ctrl+X","cut"],["Ctrl+V","paste"]].map((k,i)=>{
+      const kx = 70 + i*180;
+      return `<rect x="${kx}" y="70" width="140" height="46" rx="8" fill="${DP.panel}" stroke="${DP.line}" stroke-width="1.5"/>
+        <text x="${kx+70}" y="90" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="12" font-weight="700" fill="${DP.tealDeep}">${k[0]}</text>
+        <text x="${kx+70}" y="106" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="9.5" fill="${DP.inkSoft}">${k[1]}</text>`;
+    }).join("");
+    const note = `<text x="70" y="146" font-family="IBM Plex Sans, sans-serif" font-size="10" fill="${DP.inkSoft}">Copy keeps the original. Cut removes it. Paste drops it in the new spot.</text>`;
+    const callout = dCalloutBubble(60,175,540,"Select text first, then use these — on a Mac use Cmd instead of Ctrl.",null);
+    return dWrapSvg(frame+keys+note+callout.svg, 640, 285);
+  },
+  "l2-docs-images-insert": ()=>{
+    const frame = dBrowserFrame(20,20,600,250,"Untitled document");
+    const tb = dToolbarRow(60,52,[{label:"Insert",highlight:true}]);
+    const menu = dDropdownMenu(60,88,["Image","Table","Link"],0);
+    const sub = dDropdownMenu(215,88,["Upload from computer","Search the web","Drive"],1);
+    const callout = dCalloutBubble(390,165,210,"Insert > Image, then pick where the picture comes from.",{x:290,y:130});
+    return dWrapSvg(frame+tb+menu.svg+sub.svg+callout.svg, 640, 290);
+  },
+  "l2-docs-find": ()=>{
+    const frame = dBrowserFrame(20,20,600,240,"Untitled document");
+    const findBox = `<rect x="360" y="55" width="220" height="30" rx="6" fill="${DP.panel}" stroke="${DP.teal}" stroke-width="1.5"/>
+      <text x="372" y="74" font-family="IBM Plex Sans, sans-serif" font-size="11" fill="${DP.ink}">habitat</text>
+      <text x="548" y="74" font-family="IBM Plex Sans, sans-serif" font-size="10" fill="${DP.inkSoft}">1/3</text>`;
+    const body = `<text x="60" y="115" font-family="IBM Plex Sans, sans-serif" font-size="10.5" fill="${DP.inkSoft}">The polar bear </text>
+      <rect x="152" y="104" width="44" height="16" rx="2" fill="#ffe08a"/>
+      <text x="156" y="115" font-family="IBM Plex Sans, sans-serif" font-size="10.5" fill="${DP.ink}">habitat</text>
+      <text x="200" y="115" font-family="IBM Plex Sans, sans-serif" font-size="10.5" fill="${DP.inkSoft}"> is shrinking.</text>
+      <line x1="60" y1="140" x2="420" y2="140" stroke="${DP.line}"/>`;
+    const callout = dCalloutBubble(60,175,540,"Press Ctrl+F, type a word, and Docs jumps straight to it.",{x:470,y:88});
+    return dWrapSvg(frame+findBox+body+callout.svg, 640, 265);
+  },
+  "l2-slides-create": ()=>{
+    const frame = dBrowserFrame(20,20,600,240,"Google Drive");
+    const tb = dToolbarRow(60,58,[{label:"+ New",highlight:true}]);
+    const menu = dDropdownMenu(60,94,["Folder","Google Docs","Google Slides","Google Sheets"],2);
+    const callout = dCalloutBubble(330,150,270,"+ New > Google Slides starts a blank presentation.",{x:210,y:161});
+    return dWrapSvg(frame+tb+menu.svg+callout.svg, 640, 290);
+  },
+  "l2-slides-text": ()=>{
+    const frame = dBrowserFrame(20,20,600,250,"Untitled presentation");
+    const canvas = dSlideCanvas(120,65,400,140,{});
+    const titleBox = `<rect x="150" y="90" width="340" height="34" rx="3" fill="none" stroke="${DP.teal}" stroke-width="1.5" stroke-dasharray="4,3"/>
+      <text x="162" y="113" font-family="IBM Plex Sans, sans-serif" font-size="15" font-weight="700" fill="${DP.ink}">Polar Bears</text>`;
+    const bodyBox = `<rect x="150" y="136" width="340" height="46" rx="3" fill="none" stroke="${DP.line}" stroke-dasharray="4,3"/>
+      <text x="162" y="157" font-family="IBM Plex Sans, sans-serif" font-size="10.5" fill="${DP.inkSoft}">Click a text box and start typing.</text>`;
+    const callout = dCalloutBubble(60,215,540,"Click a text placeholder, or Insert > Text box to add your own.",null);
+    return dWrapSvg(frame+canvas+titleBox+bodyBox+callout.svg, 640, 290);
+  },
+  "l2-slides-images": ()=>{
+    const frame = dBrowserFrame(20,20,600,250,"Untitled presentation");
+    const tb = dToolbarRow(50,52,[{label:"Insert",highlight:false},{label:"Image",highlight:true}]);
+    const canvas = dSlideCanvas(160,90,330,115,{titleBar:true});
+    const img = `<rect x="180" y="125" width="120" height="66" rx="3" fill="${DP.slateTint}" stroke="${DP.line}"/>
+      <circle cx="205" cy="147" r="8" fill="#c9cfce"/><path d="M186,185 l26,-24 l20,18 l14,-10 l22,16 z" fill="#c9cfce"/>
+      <line x1="315" y1="135" x2="470" y2="135" stroke="${DP.line}"/><line x1="315" y1="152" x2="450" y2="152" stroke="${DP.line}"/>`;
+    const callout = dCalloutBubble(60,215,540,"Insert > Image, then upload one or search the web for it.",null);
+    return dWrapSvg(frame+tb+canvas+img+callout.svg, 640, 290);
+  },
+  "l2-slides-present": ()=>{
+    const frame = dBrowserFrame(20,20,600,250,"Untitled presentation");
+    const btn = `<rect x="480" y="52" width="100" height="28" rx="14" fill="${DP.teal}"/>
+      <text x="530" y="70" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="11" font-weight="600" fill="#fff">▶ Present</text>`;
+    const full = `<rect x="110" y="98" width="400" height="110" rx="4" fill="${DP.ink}"/>
+      <rect x="140" y="122" width="180" height="12" rx="2" fill="${DP.teal}"/>
+      <line x1="140" y1="152" x2="430" y2="152" stroke="#3d4f63" stroke-width="2"/><line x1="140" y1="168" x2="390" y2="168" stroke="#3d4f63" stroke-width="2"/>
+      <text x="470" y="200" text-anchor="middle" font-size="9" font-family="IBM Plex Sans, sans-serif" fill="#8ea0ad">1 / 4</text>`;
+    const callout = dCalloutBubble(60,220,540,"Click Present for full screen. Arrow keys change slides, Esc exits.",{x:530,y:82});
+    return dWrapSvg(frame+btn+full+callout.svg, 640, 295);
+  },
+  "l2-sheets-enter": ()=>{
+    const frame = dBrowserFrame(20,20,600,250,"Untitled spreadsheet");
+    const grid = dSheetGrid(60,60,3,5,{formulaCell:"B2",values:{A1:"Day",B1:"Temp",A2:"Mon",B2:"14",A3:"Tue"},highlightCells:["B2"]});
+    const callout = dCalloutBubble(330,205,270,"Click a cell, type, then press Enter to drop down or Tab to go right.",{x:145,y:132});
+    return dWrapSvg(frame+grid.svg+callout.svg, 640, 290);
+  },
+  "l2-sheets-table": ()=>{
+    const frame = dBrowserFrame(20,20,600,260,"Untitled spreadsheet");
+    const grid = dSheetGrid(90,60,3,5,{values:{A1:"Day",B1:"Temp",C1:"Rain",A2:"Mon",B2:"14",C2:"2",A3:"Tue",B3:"17",C3:"0",A4:"Wed",B4:"13",C4:"5"},highlightCells:["A1","B1","C1"]});
+    const labelRow = `<text x="300" y="98" font-family="IBM Plex Sans, sans-serif" font-size="9.5" font-weight="600" fill="${DP.tealDeep}">← headers in row 1</text>
+      <text x="300" y="150" font-family="IBM Plex Sans, sans-serif" font-size="9.5" fill="${DP.inkSoft}">← one row per day</text>`;
+    const callout = dCalloutBubble(60,215,540,"Put your labels in row 1, then one row of data underneath each.",null);
+    return dWrapSvg(frame+grid.svg+labelRow+callout.svg, 640, 290);
+  },
+  "l2-sheets-read": ()=>{
+    const frame = dBrowserFrame(20,20,600,260,"Untitled spreadsheet");
+    const grid = dSheetGrid(50,60,3,5,{values:{A1:"Day",B1:"Temp",A2:"Mon",B2:"14",A3:"Tue",B3:"17",A4:"Wed",B4:"22",A5:"Thu",B5:"9"},highlightCells:["B4","B5"]});
+    const qs = `<rect x="330" y="70" width="260" height="110" rx="8" fill="${DP.tealTint}" stroke="#b9e0d6"/>
+      <text x="344" y="90" font-family="IBM Plex Sans, sans-serif" font-size="10" font-weight="700" fill="${DP.tealDeep}">Ask yourself:</text>
+      <text x="344" y="110" font-family="IBM Plex Sans, sans-serif" font-size="9.5" fill="${DP.tealDeep}">• Which day was warmest?</text>
+      <text x="344" y="128" font-family="IBM Plex Sans, sans-serif" font-size="9.5" fill="${DP.tealDeep}">• Which was coldest?</text>
+      <text x="344" y="146" font-family="IBM Plex Sans, sans-serif" font-size="9.5" fill="${DP.tealDeep}">• Is it going up or down?</text>
+      <text x="344" y="166" font-family="IBM Plex Sans, sans-serif" font-size="9.5" fill="${DP.tealDeep}">• What does that tell me?</text>`;
+    const callout = dCalloutBubble(50,205,540,"Reading a spreadsheet means explaining what the numbers show.",null);
+    return dWrapSvg(frame+grid.svg+qs+callout.svg, 640, 290);
+  },
+  "l3-permissions": ()=>{
+    const frame = dBrowserFrame(20,20,600,270,"Untitled document");
+    const rows = [
+      {role:"Viewer",can:"Can only read it",tone:DP.slateTint},
+      {role:"Commenter",can:"Can read + leave notes",tone:DP.amberTint},
+      {role:"Editor",can:"Can change the file itself",tone:DP.tealTint},
+    ].map((r,i)=>{
+      const ry = 70 + i*52;
+      return `<rect x="70" y="${ry}" width="500" height="42" rx="8" fill="${r.tone}" stroke="${DP.line}"/>
+        <text x="86" y="${ry+18}" font-family="IBM Plex Sans, sans-serif" font-size="11.5" font-weight="700" fill="${DP.ink}">${r.role}</text>
+        <text x="86" y="${ry+34}" font-family="IBM Plex Sans, sans-serif" font-size="10" fill="${DP.inkSoft}">${r.can}</text>`;
+    }).join("");
+    const callout = dCalloutBubble(60,240,540,"Give the least access that still lets them do their job.",null);
+    return dWrapSvg(frame+rows+callout.svg, 640, 320);
+  },
+  "l3-comments-add": ()=>{
+    const frame = dBrowserFrame(20,20,600,250,"Untitled document");
+    const icon = `<rect x="540" y="88" width="34" height="30" rx="6" fill="${DP.teal}"/>
+      <path d="M548,96 h18 v12 h-8 l-5,5 v-5 h-5 z" fill="#fff"/>`;
+    const sel = `<rect x="60" y="88" width="190" height="18" rx="2" fill="#b9d9f5"/>
+      <text x="65" y="101" font-family="IBM Plex Sans, sans-serif" font-size="10.5" fill="${DP.ink}">this part needs an example</text>
+      <line x1="60" y1="124" x2="400" y2="124" stroke="${DP.line}"/>`;
+    const box = dCommentThread(300,140,250,[{initial:"K",name:"Mr. King",text:"Add an example here."}]);
+    const callout = dCalloutBubble(60,150,220,"Select text, then click the comment icon.",{x:557,y:120});
+    return dWrapSvg(frame+sel+icon+box.svg+callout.svg, 640, 290);
+  },
+  "l3-comments-reply": ()=>{
+    const frame = dBrowserFrame(20,20,600,260,"Untitled document");
+    const thread = dCommentThread(180,70,300,[
+      {initial:"K",name:"Mr. King",text:"Can you add a source for this?"},
+      {initial:"J",name:"Jordan",text:"Added one at the bottom."},
+    ]);
+    const resolve = `<rect x="400" y="188" width="80" height="22" rx="11" fill="${DP.tealTint}" stroke="${DP.teal}"/>
+      <text x="440" y="203" text-anchor="middle" font-size="9.5" font-family="IBM Plex Sans, sans-serif" font-weight="600" fill="${DP.tealDeep}">Resolve</text>`;
+    const callout = dCalloutBubble(60,225,540,"Click Reply to answer, then Resolve once it's been handled.",null);
+    return dWrapSvg(frame+thread.svg+resolve+callout.svg, 640, 300);
+  },
+  "l3-feedback": ()=>{
+    const frame = dBrowserFrame(20,20,600,240,"Untitled document");
+    const cmp = dComparePanels(50,65,540,110,
+      {label:"NOT HELPFUL",good:false,text:"\"This is bad.\" It doesn't say what's wrong or how to fix it."},
+      {label:"HELPFUL",good:true,text:"\"Your intro is strong. The middle part confused me — maybe add an example?\""});
+    const callout = dCalloutBubble(50,195,540,"Name something that works, then give one clear suggestion.",null);
+    return dWrapSvg(frame+cmp+callout.svg, 640, 275);
+  },
+  "l3-appropriate-behaviour": ()=>{
+    const frame = dBrowserFrame(20,20,600,250,"Untitled document");
+    const cmp = dComparePanels(50,65,540,120,
+      {label:"DON'T",good:false,text:"Delete a classmate's work. Edit without asking. Leave rude or joke comments."},
+      {label:"DO",good:true,text:"Use Suggesting mode. Sign your comments. Add to your own section."});
+    const callout = dCalloutBubble(50,205,540,"A shared file is someone else's work too — treat it that way.",null);
+    return dWrapSvg(frame+cmp+callout.svg, 640, 285);
+  },
+  "l4-search": ()=>{
+    const frame = dBrowserFrame(20,20,600,250,"Google Search");
+    const bar = `<rect x="70" y="70" width="500" height="30" rx="15" fill="${DP.panel}" stroke="${DP.teal}" stroke-width="1.5"/>
+      <text x="86" y="90" font-family="IBM Plex Sans, sans-serif" font-size="11" fill="${DP.ink}">polar bear habitat loss causes</text>`;
+    const cmp = dComparePanels(70,115,500,66,
+      {label:"TOO VAGUE",good:false,text:"\"tell me about bears\""},
+      {label:"SPECIFIC",good:true,text:"\"polar bear habitat loss causes\""});
+    const callout = dCalloutBubble(70,200,500,"Use a few specific words, not a whole question.",null);
+    return dWrapSvg(frame+bar+cmp+callout.svg, 640, 280);
+  },
+  "l4-keywords": ()=>{
+    const frame = dBrowserFrame(20,20,600,250,"Google Search");
+    const cmp = dComparePanels(50,70,540,80,
+      {label:"BROAD",good:false,text:"butterflies — millions of results, most not useful"},
+      {label:"NARROW",good:true,text:"monarch butterfly migration route — exactly what you need"});
+    const callout = dCalloutBubble(50,170,540,"Add a specific detail to cut out results you don't want.",null);
+    return dWrapSvg(frame+cmp+callout.svg, 640, 285);
+  },
+  "l4-refine": ()=>{
+    const frame = dBrowserFrame(20,20,600,260,"Google Search");
+    const steps = [
+      {q:"energy",note:"way too broad"},
+      {q:"renewable energy",note:"better"},
+      {q:"\"solar energy\" Canada 2026",note:"quotes = exact phrase"},
+    ].map((s,i)=>{
+      const sy = 70 + i*52;
+      const on = i===2;
+      return `<rect x="70" y="${sy}" width="440" height="34" rx="17" fill="${on?DP.tealTint:DP.panel}" stroke="${on?DP.teal:DP.line}" stroke-width="${on?1.5:1}"/>
+        <text x="88" y="${sy+22}" font-family="IBM Plex Sans, sans-serif" font-size="11" fill="${on?DP.tealDeep:DP.inkSoft}">${dEsc(s.q)}</text>
+        <text x="522" y="${sy+22}" font-family="IBM Plex Sans, sans-serif" font-size="9" fill="${DP.inkSoft}">${dEsc(s.note)}</text>`;
+    }).join("");
+    const callout = dCalloutBubble(60,235,540,"If the results are wrong, change your words and search again.",null);
+    return dWrapSvg(frame+steps+callout.svg, 640, 310);
+  },
+  "l4-compare": ()=>{
+    const frame = dBrowserFrame(20,20,600,260,"Three sources");
+    const cards = [0,1,2].map(i=>{
+      const cx = 60 + i*180;
+      const agree = i<2;
+      return `<rect x="${cx}" y="70" width="160" height="96" rx="8" fill="#fff" stroke="${agree?DP.teal:DP.coral}" stroke-width="1.5"/>
+        <rect x="${cx+12}" y="84" width="${110-i*14}" height="8" rx="2" fill="${DP.ink}"/>
+        <line x1="${cx+12}" y1="106" x2="${cx+140}" y2="106" stroke="${DP.line}"/>
+        <line x1="${cx+12}" y1="120" x2="${cx+128}" y2="120" stroke="${DP.line}"/>
+        <text x="${cx+12}" y="150" font-family="IBM Plex Sans, sans-serif" font-size="9.5" font-weight="600" fill="${agree?DP.tealDeep:DP.coral}">${agree?"says 2.1 million":"says 8 million"}</text>`;
+    }).join("");
+    const callout = dCalloutBubble(60,190,540,"When two sources agree and one doesn't, dig into the odd one out.",null);
+    return dWrapSvg(frame+cards+callout.svg, 640, 295);
+  },
+  "l4-unreliable": ()=>{
+    const frame = dBrowserFrame(20,20,600,270,"???.com");
+    const flags = [
+      "No author anywhere on the page",
+      "Huge claims with no sources",
+      "Lots of ads, or selling something",
+      "No date, or years out of date",
+    ].map((f,i)=>{
+      const fy = 70 + i*40;
+      return `<rect x="70" y="${fy}" width="500" height="32" rx="8" fill="#f8e5df" stroke="#e9bcac"/>
+        <text x="86" y="${fy+21}" font-family="IBM Plex Sans, sans-serif" font-size="10.5" fill="${DP.coral}">⚠  ${dEsc(f)}</text>`;
+    }).join("");
+    const callout = dCalloutBubble(60,240,540,"One red flag means check twice. Several means find a better source.",null);
+    return dWrapSvg(frame+flags+callout.svg, 640, 320);
+  },
+  "l4-copyright": ()=>{
+    const frame = dBrowserFrame(20,20,600,250,"Image search");
+    const cmp = dComparePanels(50,70,540,86,
+      {label:"ASK FIRST",good:false,text:"Any image you find online belongs to whoever made it."},
+      {label:"SAFER",good:true,text:"Look for images labelled for reuse, or Creative Commons."});
+    const callout = dCalloutBubble(50,176,540,"Someone made that image. Credit them, or use one cleared for reuse.",null);
+    return dWrapSvg(frame+cmp+callout.svg, 640, 285);
+  },
+  "l4-plagiarism": ()=>{
+    const frame = dBrowserFrame(20,20,600,250,"Your document");
+    const cmp = dComparePanels(50,70,540,92,
+      {label:"PLAGIARISM",good:false,text:"Copying a sentence straight from a website into your report with no credit."},
+      {label:"OK",good:true,text:"Writing the idea in your own words and naming where it came from."});
+    const callout = dCalloutBubble(50,182,540,"Using someone's words or ideas as if they're yours is plagiarism.",null);
+    return dWrapSvg(frame+cmp+callout.svg, 640, 285);
+  },
+  "l4-paraphrase": ()=>{
+    const frame = dBrowserFrame(20,20,600,260,"Your notes");
+    const orig = `<rect x="60" y="68" width="520" height="44" rx="8" fill="${DP.slateTint}" stroke="${DP.line}"/>
+      <text x="74" y="86" font-family="IBM Plex Sans, sans-serif" font-size="9.5" font-weight="700" fill="${DP.inkSoft}">ORIGINAL</text>
+      <text x="74" y="103" font-family="IBM Plex Sans, sans-serif" font-size="10" fill="${DP.ink}">"Arctic sea ice has declined by about 13% per decade since 1979."</text>`;
+    const arrow = `<path d="M320,118 L320,134" stroke="${DP.teal}" stroke-width="2"/><path d="M320,140 l-5,-9 l10,0 z" fill="${DP.teal}"/>
+      <text x="334" y="134" font-family="IBM Plex Sans, sans-serif" font-size="9" fill="${DP.inkSoft}">cover it up, then write it your way</text>`;
+    const mine = `<rect x="60" y="146" width="520" height="46" rx="8" fill="${DP.tealTint}" stroke="${DP.teal}" stroke-width="1.5"/>
+      <text x="74" y="164" font-family="IBM Plex Sans, sans-serif" font-size="9.5" font-weight="700" fill="${DP.tealDeep}">MY PARAPHRASE</text>
+      <text x="74" y="182" font-family="IBM Plex Sans, sans-serif" font-size="10" fill="${DP.ink}">Since 1979, the Arctic has lost roughly an eighth of its sea ice every ten years.</text>`;
+    const callout = dCalloutBubble(60,208,540,"Same meaning, your words — and still name the source.",null);
+    return dWrapSvg(frame+orig+arrow+mine+callout.svg, 640, 285);
+  },
+  "l4-credit": ()=>{
+    const frame = dBrowserFrame(20,20,600,240,"Your document");
+    const body = `<text x="60" y="88" font-family="IBM Plex Sans, sans-serif" font-size="10.5" fill="${DP.ink}">The Arctic loses about an eighth of its sea ice each decade</text>
+      <rect x="60" y="98" width="330" height="20" rx="4" fill="${DP.tealTint}"/>
+      <text x="68" y="112" font-family="IBM Plex Sans, sans-serif" font-size="10" fill="${DP.tealDeep}">(NASA Climate, nasa.gov, 2026).</text>
+      <line x1="60" y1="138" x2="500" y2="138" stroke="${DP.line}"/>`;
+    const callout = dCalloutBubble(60,168,540,"Name the source right beside the fact you took from it.",{x:225,y:122});
+    return dWrapSvg(frame+body+callout.svg, 640, 280);
+  },
+  "l4-citation-list": ()=>{
+    const frame = dBrowserFrame(20,20,600,260,"Your document");
+    const head = `<text x="60" y="80" font-family="IBM Plex Sans, sans-serif" font-size="13" font-weight="700" fill="${DP.ink}">Sources</text>`;
+    const items = [
+      ["NASA Climate Change","nasa.gov/arctic-sea-ice","2026"],
+      ["Canadian Wildlife Federation","cwf-fcf.org/polar-bears","2025"],
+    ].map((s,i)=>{
+      const iy = 100 + i*52;
+      return `<rect x="60" y="${iy}" width="520" height="42" rx="8" fill="${DP.tealTint}" stroke="#b9e0d6"/>
+        <text x="74" y="${iy+18}" font-family="IBM Plex Sans, sans-serif" font-size="10.5" font-weight="600" fill="${DP.ink}">${dEsc(s[0])}</text>
+        <text x="74" y="${iy+33}" font-family="IBM Plex Sans, sans-serif" font-size="9.5" fill="${DP.inkSoft}">${dEsc(s[1])} — ${dEsc(s[2])}</text>`;
+    }).join("");
+    const callout = dCalloutBubble(60,215,540,"List the title, the web address and the year for each source you used.",null);
+    return dWrapSvg(frame+head+items+callout.svg, 640, 290);
+  },
 };
 function renderSkillDiagram(skillId){
   const fn = SKILL_DIAGRAMS[skillId];
@@ -1039,8 +1714,11 @@ function levelBadgeEarned(student, levelId){
   return levelChallengeStatus(student, levelId) === "achieved";
 }
 function levelUnlocked(student, levelId){
-  if(levelId===1) return true;
-  return levelBadgeEarned(student, levelId-1);
+  // Levels are always open to navigate — students move at their own pace.
+  // The teacher-approval requirement lives at the finish line instead: the
+  // certificate (see courseComplete) still can't be earned until every skill
+  // and every level challenge has actually been marked achieved by a teacher.
+  return true;
 }
 function finalProjectStatus(student){
   return (student && student.finalProject && student.finalProject.status) || "not-started";
@@ -1396,7 +2074,6 @@ function renderLevel(levelId){
   }
   const p = levelProgress(student, levelId);
   const challengeStatus = levelChallengeStatus(student, levelId);
-  const allSkillsAchieved = p.total>0 && p.achieved===p.total;
 
   const sections = level.sections.map(section=>{
     const sp = sectionProgress(student, levelId, section.name);
@@ -1447,10 +2124,9 @@ function renderLevel(levelId){
         ${chip(challengeStatus==="not-started" ? "not-started" : challengeStatus)}
       </div>
       <p style="color:var(--ink-soft);margin-top:8px;">${esc(level.challenge.description)}</p>
-      <button class="btn ${allSkillsAchieved ? 'btn-primary':'btn-secondary'} btn-sm" style="margin-top:10px;" data-nav="#/challenge/${level.id}" ${allSkillsAchieved?'':'disabled'}>
+      <button class="btn btn-primary btn-sm" style="margin-top:10px;" data-nav="#/challenge/${level.id}">
         ${challengeStatus==="achieved" ? "Review challenge" : "Start level challenge"}
       </button>
-      ${!allSkillsAchieved ? `<p style="color:var(--ink-soft);font-size:0.85rem;margin-top:8px;">Achieve every skill above to unlock this challenge.</p>` : ""}
     </div>
   </main>`;
 }
@@ -1560,14 +2236,10 @@ function renderChallenge(levelId){
   const sub = student.challengeSubmissions[levelId];
   const tasks = level.challenge.tasks.map(t=>`<li><span class="step-num">✓</span><span>${esc(t)}</span></li>`).join("");
   const p = levelProgress(student, levelId);
-  const skillsReady = p.total===0 || p.achieved===p.total;
 
   let block;
   if(status==="achieved"){
     block = `<div class="banner banner-success"><span>🏆</span><div><strong>${esc(level.badge)} badge earned!</strong><p style="margin:4px 0 0;">You've unlocked the next level.</p></div></div>`;
-  } else if(!skillsReady){
-    block = `<div class="banner banner-lock"><span>🔒</span><div><strong>Not quite ready yet.</strong><p style="margin:4px 0 0;">Achieve all ${p.total} skills in this level first (${p.achieved}/${p.total} so far).</p></div></div>
-    <button class="btn btn-secondary btn-sm" style="margin-top:10px;" data-nav="#/level/${levelId}">Back to Level ${levelId}</button>`;
   } else if(status==="pending"){
     block = `<div class="banner banner-info"><span>⏳</span><div><strong>Submitted — waiting for your teacher to review.</strong>${sub&&sub.note?`<p style="margin:4px 0 0;">You wrote: "${esc(sub.note)}"</p>`:""}${sub&&sub.link?`<p style="margin:4px 0 0;">Link: <a href="${esc(safeUrl(sub.link))}" target="_blank" rel="noopener noreferrer">${esc(sub.link)}</a></p>`:""}</div></div>
     <button class="btn btn-ghost" id="undo-challenge">Undo and resubmit</button>`;
